@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Material App</string>
+    <string name="fab_content_desc">Add new item</string>
+    
+    <!-- Navigation Labels -->
+    <string name="nav_home">Home</string>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_profile">Profile</string>
+    
+    <!-- Home Fragment -->
+    <string name="home_title">Welcome to Material App</string>
+    <string name="home_subtitle">Beautiful UI with Material Design 3</string>
+    <string name="card_title">Material Card</string>
+    <string name="card_description">This is a Material Design card with elevation and rounded corners.</string>
+    <string name="action_button">Learn More</string>
+    
+    <!-- Dashboard Fragment -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="stats_title">Statistics</string>
+    
+    <!-- Notifications Fragment -->
+    <string name="notifications_title">Notifications</string>
+    <string name="no_notifications">No new notifications</string>
+    
+    <!-- Profile Fragment -->
+    <string name="profile_title">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
+</resources>
