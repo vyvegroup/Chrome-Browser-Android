@@ -17,16 +17,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Quick Actions Card -->
+        <!-- Quick Actions - Glass Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="24dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/md_theme_surface">
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#F5F5F5">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -42,29 +43,19 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp"
+                    android:padding="10dp"
                     android:background="@drawable/ripple_round">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/md_theme_primaryContainer">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_add"
-                            app:tint="@color/md_theme_primary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/md_theme_primary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:text="New Tab"
                         android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
                         android:textColor="@color/text_primary" />
@@ -79,29 +70,19 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp"
+                    android:padding="10dp"
                     android:background="@drawable/ripple_round">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/incognito_surface">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_incognito"
-                            app:tint="@color/white" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_incognito"
+                        app:tint="@color/incognito_surface" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:text="Incognito"
                         android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
                         android:textColor="@color/text_primary" />
@@ -116,29 +97,19 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp"
+                    android:padding="10dp"
                     android:background="@drawable/ripple_round">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/md_theme_secondaryContainer">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_bookmark"
-                            app:tint="@color/md_theme_secondary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_bookmark"
+                        app:tint="@color/md_theme_secondary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:text="Bookmarks"
                         android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
                         android:textColor="@color/text_primary" />
@@ -153,29 +124,19 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp"
+                    android:padding="10dp"
                     android:background="@drawable/ripple_round">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/md_theme_tertiaryContainer">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_history"
-                            app:tint="@color/md_theme_tertiary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_history"
+                        app:tint="@color/md_theme_tertiary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:text="History"
                         android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
                         android:textColor="@color/text_primary" />
@@ -186,16 +147,17 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Menu Items Card -->
+        <!-- Menu Items - Glass Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            app:cardCornerRadius="24dp"
+            app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/md_theme_surface">
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#F5F5F5">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -226,17 +188,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="16dp"
                         android:text="Downloads"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:textColor="@color/text_primary" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_forward"
-                        android:rotation="-90"
-                        app:tint="@color/text_tertiary" />
 
                 </LinearLayout>
 
@@ -263,7 +218,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="16dp"
                         android:text="Add to Bookmarks"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:textColor="@color/text_primary" />
@@ -293,7 +248,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="16dp"
                         android:text="Desktop Site"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:textColor="@color/text_primary" />
@@ -323,7 +278,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="16dp"
                         android:text="Share"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:textColor="@color/text_primary" />
@@ -334,15 +289,16 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Advanced Menu Card -->
+        <!-- Advanced Menu - Glass Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            app:cardCornerRadius="24dp"
+            app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/md_theme_surface">
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#F5F5F5">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -373,17 +329,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="16dp"
                         android:text="Extensions"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:textColor="@color/text_primary" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_forward"
-                        android:rotation="-90"
-                        app:tint="@color/text_tertiary" />
 
                 </LinearLayout>
 
@@ -410,17 +359,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="16dp"
                         android:text="Settings"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:textColor="@color/text_primary" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_forward"
-                        android:rotation="-90"
-                        app:tint="@color/text_tertiary" />
 
                 </LinearLayout>
 

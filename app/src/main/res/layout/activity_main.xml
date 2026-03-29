@@ -21,7 +21,7 @@
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="90dp">
+        android:layout_marginBottom="85dp">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -81,7 +81,7 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!-- Page Header (shows when scrolling down) -->
+    <!-- Page Header (shows when scrolling down) - Glass UI -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/pageHeader"
         android:layout_width="match_parent"
@@ -89,10 +89,10 @@
         android:layout_gravity="top"
         android:layout_margin="16dp"
         android:visibility="gone"
-        app:cardBackgroundColor="@color/md_theme_surface"
-        app:cardCornerRadius="28dp"
-        app:cardElevation="8dp"
-        app:strokeWidth="0dp">
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="#E6FFFFFF">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -123,8 +123,8 @@
 
             <ImageButton
                 android:id="@+id/btnShowUrl"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@drawable/ripple_oval"
                 android:src="@drawable/ic_search"
                 app:tint="@color/text_secondary" />
@@ -133,16 +133,16 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Floating Bottom Bar - Enhanced Shadow & Higher Position -->
+    <!-- Floating Bottom Bar - Glass UI iOS Style -->
     <LinearLayout
         android:id="@+id/floatingBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical"
-        android:layout_marginBottom="20dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
+        android:layout_marginBottom="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:background="@android:color/transparent">
 
         <!-- Material Progress Indicator -->
@@ -155,59 +155,46 @@
             android:layout_marginBottom="6dp"
             android:visibility="gone"
             app:indicatorColor="@color/md_theme_primary"
-            app:trackColor="@color/md_theme_surfaceContainerHigh"
+            app:trackColor="@android:color/transparent"
             app:trackCornerRadius="4dp"
             app:trackThickness="3dp"
             app:showAnimationBehavior="inward"
             app:hideAnimationBehavior="outward" />
 
-        <!-- Floating URL Card with Premium Material 3 Shadow -->
+        <!-- Floating URL Card - Glass UI -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/floatingUrlCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/md_theme_surface"
             app:cardCornerRadius="28dp"
-            app:cardElevation="16dp"
-            app:cardMaxElevation="24dp"
+            app:cardElevation="0dp"
             app:strokeWidth="0dp"
-            app:rippleColor="@color/ripple"
-            app:cardPreventCornerOverlap="true"
-            app:cardUseCompatPadding="false">
+            app:cardBackgroundColor="#F2FFFFFF"
+            app:rippleColor="@color/ripple">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- URL Input Row (Compact) -->
+                <!-- URL Input Row -->
                 <LinearLayout
                     android:id="@+id/urlRow"
                     android:layout_width="match_parent"
                     android:layout_height="58dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp">
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
 
-                    <!-- Security Icon (Circular) -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="4dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/md_theme_tertiaryContainer">
-
-                        <ImageView
-                            android:id="@+id/securityIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_lock"
-                            app:tint="@color/md_theme_tertiary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                    <!-- Security Icon - Clean filled background -->
+                    <ImageView
+                        android:id="@+id/securityIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/ic_lock"
+                        app:tint="@color/md_theme_tertiary" />
 
                     <!-- URL Input -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -215,7 +202,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="12dp"
                         app:boxBackgroundMode="none"
                         app:hintEnabled="false">
 
@@ -234,49 +221,30 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Tab Count (Rounded Square) -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/tabCountContainer"
-                        android:layout_width="40dp"
-                        android:layout_height="36dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/md_theme_primaryContainer"
+                    <!-- Tab Count - Clean filled background -->
+                    <TextView
+                        android:id="@+id/tabCountText"
+                        android:layout_width="36dp"
+                        android:layout_height="32dp"
+                        android:gravity="center"
+                        android:background="@drawable/tab_count_background"
+                        android:text="1"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="@color/md_theme_primary"
+                        android:textStyle="bold"
                         android:clickable="true"
-                        android:focusable="true">
+                        android:focusable="true" />
 
-                        <TextView
-                            android:id="@+id/tabCountText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="1"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-                            android:textColor="@color/md_theme_primary"
-                            android:textStyle="bold" />
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Menu Button (Circular) -->
-                    <com.google.android.material.card.MaterialCardView
+                    <!-- Menu Button - Clean icon only -->
+                    <ImageButton
+                        android:id="@+id/btnMenu"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         android:layout_marginStart="4dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/md_theme_surfaceContainerHigh">
-
-                        <ImageButton
-                            android:id="@+id/btnMenu"
-                            android:layout_width="44dp"
-                            android:layout_height="44dp"
-                            android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@drawable/ic_more"
-                            android:contentDescription="Menu"
-                            app:tint="@color/text_secondary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:background="@drawable/ripple_oval"
+                        android:src="@drawable/ic_more"
+                        android:contentDescription="Menu"
+                        app:tint="@color/text_secondary" />
 
                 </LinearLayout>
 
@@ -287,115 +255,65 @@
                     android:layout_height="52dp"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:background="@color/md_theme_surfaceContainerLow"
+                    android:background="#10FFFFFF"
                     android:visibility="gone"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp">
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp">
 
                     <!-- Back Button -->
-                    <com.google.android.material.card.MaterialCardView
+                    <ImageButton
+                        android:id="@+id/btnBack"
                         android:layout_width="0dp"
                         android:layout_height="44dp"
                         android:layout_weight="1"
-                        android:layout_margin="2dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@android:color/transparent">
-
-                        <ImageButton
-                            android:id="@+id/btnBack"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:src="@drawable/ic_back"
-                            android:contentDescription="Back"
-                            app:tint="@color/text_secondary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:background="@drawable/ripple_oval"
+                        android:src="@drawable/ic_back"
+                        android:contentDescription="Back"
+                        app:tint="@color/text_secondary" />
 
                     <!-- Forward Button -->
-                    <com.google.android.material.card.MaterialCardView
+                    <ImageButton
+                        android:id="@+id/btnForward"
                         android:layout_width="0dp"
                         android:layout_height="44dp"
                         android:layout_weight="1"
-                        android:layout_margin="2dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@android:color/transparent">
-
-                        <ImageButton
-                            android:id="@+id/btnForward"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:src="@drawable/ic_forward"
-                            android:contentDescription="Forward"
-                            app:tint="@color/text_secondary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:background="@drawable/ripple_oval"
+                        android:src="@drawable/ic_forward"
+                        android:contentDescription="Forward"
+                        app:tint="@color/text_secondary" />
 
                     <!-- Refresh Button -->
-                    <com.google.android.material.card.MaterialCardView
+                    <ImageButton
+                        android:id="@+id/btnRefresh"
                         android:layout_width="0dp"
                         android:layout_height="44dp"
                         android:layout_weight="1"
-                        android:layout_margin="2dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@android:color/transparent">
-
-                        <ImageButton
-                            android:id="@+id/btnRefresh"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:src="@drawable/ic_refresh"
-                            android:contentDescription="Refresh"
-                            app:tint="@color/text_secondary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:background="@drawable/ripple_oval"
+                        android:src="@drawable/ic_refresh"
+                        android:contentDescription="Refresh"
+                        app:tint="@color/text_secondary" />
 
                     <!-- Home Button -->
-                    <com.google.android.material.card.MaterialCardView
+                    <ImageButton
+                        android:id="@+id/btnHome"
                         android:layout_width="0dp"
                         android:layout_height="44dp"
                         android:layout_weight="1"
-                        android:layout_margin="2dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@android:color/transparent">
-
-                        <ImageButton
-                            android:id="@+id/btnHome"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:src="@drawable/ic_home_chrome"
-                            android:contentDescription="Home"
-                            app:tint="@color/text_secondary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:background="@drawable/ripple_oval"
+                        android:src="@drawable/ic_home_chrome"
+                        android:contentDescription="Home"
+                        app:tint="@color/text_secondary" />
 
                     <!-- Tabs Button -->
-                    <com.google.android.material.card.MaterialCardView
+                    <ImageButton
+                        android:id="@+id/btnTabs"
                         android:layout_width="0dp"
                         android:layout_height="44dp"
                         android:layout_weight="1"
-                        android:layout_margin="2dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@android:color/transparent">
-
-                        <ImageButton
-                            android:id="@+id/btnTabs"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:src="@drawable/ic_grid"
-                            android:contentDescription="Tabs"
-                            app:tint="@color/text_secondary" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:background="@drawable/ripple_oval"
+                        android:src="@drawable/ic_grid"
+                        android:contentDescription="Tabs"
+                        app:tint="@color/text_secondary" />
 
                 </LinearLayout>
 

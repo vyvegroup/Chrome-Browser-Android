@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView securityIcon;
     private ImageButton btnBack, btnForward, btnRefresh, btnHome, btnMenu, btnTabs;
     private TextView tabCountText;
-    private FrameLayout tabCountContainer;
     private LinearLayout navigationRow, floatingBarContainer;
     private MaterialCardView floatingUrlCard, pageHeader;
     private TextView headerTitle;
@@ -272,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
         btnMenu = findViewById(R.id.btnMenu);
         btnTabs = findViewById(R.id.btnTabs);
         tabCountText = findViewById(R.id.tabCountText);
-        tabCountContainer = findViewById(R.id.tabCountContainer);
         navigationRow = findViewById(R.id.navigationRow);
         floatingBarContainer = findViewById(R.id.floatingBarContainer);
         floatingUrlCard = findViewById(R.id.floatingUrlCard);
@@ -306,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
         btnRefresh.setOnClickListener(v -> refresh());
         btnHome.setOnClickListener(v -> loadUrl("https://www.google.com"));
         btnMenu.setOnClickListener(v -> showMenu());
-        tabCountContainer.setOnClickListener(v -> showTabsGrid());
+        tabCountText.setOnClickListener(v -> showTabsGrid());
         btnTabs.setOnClickListener(v -> showTabsGrid());
         
         findViewById(R.id.btnShowUrl).setOnClickListener(v -> {

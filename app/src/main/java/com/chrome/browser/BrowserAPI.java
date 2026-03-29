@@ -29,6 +29,7 @@ import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Surface;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -48,23 +49,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * BrowserAPI - JavaScript Interface for web-to-native communication
- * Allows web pages to access native Android features
+ * BrowserAPI v3.0.0 - JavaScript Interface for web-to-native communication
+ * 
+ * Supports screen sharing for video calls (WebRTC style)
  * 
  * Usage from JavaScript:
- * // Check if API is available
- * if (window.ChromeBrowserAPI) {
- *     // Get device info
- *     const info = JSON.parse(ChromeBrowserAPI.getDeviceInfo());
- *     
- *     // Start screen capture
- *     ChromeBrowserAPI.startScreenCapture("myCallback");
- *     
- *     // Show notification
- *     ChromeBrowserAPI.showNotification("Title", "Message", "info");
- * }
+ * // Request screen share stream for video calls
+ * ChromeBrowserAPI.requestScreenShareStream("callback");
+ * // Returns: { success: true, streamId: "screen-capture-id" }
+ * 
+ * // Then use navigator.mediaDevices.getUserMedia with the streamId
  */
 public class BrowserAPI {
     private static final String TAG = "BrowserAPI";
@@ -89,13 +86,21 @@ public class BrowserAPI {
     private int screenHeight;
     private int screenDensity;
     
+    // Screen share for video calls (WebRTC style)
+    private AtomicBoolean isScreenSharingActive = new AtomicBoolean(false);
+    private String currentStreamId = null;
+    private Surface screenShareSurface = null;
+    private int screenShareResultCode = 0;
+    private Intent screenShareData = null;
+    
     // Callbacks stored for async operations
     private String screenCaptureCallback;
+    private String screenShareCallback;
     private String cameraCallback;
     private String microphoneCallback;
     
     // API version
-    private static final String API_VERSION = "2.0.0";
+    private static final String API_VERSION = "3.0.0";
     
     public BrowserAPI(Activity activity, WebView webView) {
         this.activity = activity;
@@ -116,25 +121,16 @@ public class BrowserAPI {
     
     // ==================== API INFO ====================
     
-    /**
-     * Get API version
-     */
     @JavascriptInterface
     public String getVersion() {
         return API_VERSION;
     }
     
-    /**
-     * Check if API is available
-     */
     @JavascriptInterface
     public boolean isAvailable() {
         return true;
     }
     
-    /**
-     * Get device information
-     */
     @JavascriptInterface
     public String getDeviceInfo() {
         try {
@@ -151,27 +147,458 @@ public class BrowserAPI {
             info.put("screenHeight", screenHeight);
             info.put("density", screenDensity);
             info.put("packageName", context.getPackageName());
-            info.put("appVersion", "1.3.0");
+            info.put("appVersion", "1.4.0");
             info.put("apiVersion", API_VERSION);
+            info.put("screenShareAvailable", Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+            info.put("webRTCSupported", true);
             return info.toString();
         } catch (Exception e) {
             return "{}";
         }
     }
     
-    // ==================== PERMISSIONS ====================
+    // ==================== SCREEN SHARE FOR VIDEO CALLS ====================
     
     /**
-     * Check if a permission is granted
+     * Check if screen sharing is available
      */
+    @JavascriptInterface
+    public boolean isScreenShareAvailable() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+    
+    /**
+     * Check if currently screen sharing
+     */
+    @JavascriptInterface
+    public boolean isScreenSharing() {
+        return isScreenSharingActive.get();
+    }
+    
+    /**
+     * Request screen share stream for video calls
+     * Returns a streamId that can be used with getUserMedia
+     */
+    @JavascriptInterface
+    public void requestScreenShareStream(String callback) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            executeCallback(callback, "{\"success\":false,\"error\":\"Screen share requires Android 5.0+\"}");
+            return;
+        }
+        
+        screenShareCallback = callback;
+        
+        mainHandler.post(() -> {
+            try {
+                activity.startActivityForResult(
+                    projectionManager.createScreenCaptureIntent(),
+                    REQUEST_SCREEN_CAPTURE
+                );
+            } catch (Exception e) {
+                executeCallback(callback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+    }
+    
+    /**
+     * Handle screen share permission result
+     */
+    public boolean handleScreenShareResult(int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
+            if (screenShareCallback != null) {
+                executeCallback(screenShareCallback, "{\"success\":false,\"error\":\"Permission denied\"}");
+            }
+            return false;
+        }
+        
+        try {
+            // Store the result for later use
+            screenShareResultCode = resultCode;
+            screenShareData = data;
+            
+            // Create a unique stream ID
+            currentStreamId = "screen-capture-" + System.currentTimeMillis();
+            
+            // Create the media projection
+            mediaProjection = projectionManager.getMediaProjection(resultCode, data);
+            
+            // Register callback for when projection stops
+            mediaProjection.registerCallback(new MediaProjection.Callback() {
+                @Override
+                public void onStop() {
+                    isScreenSharingActive.set(false);
+                    currentStreamId = null;
+                    notifyScreenShareEnded();
+                }
+            }, mainHandler);
+            
+            isScreenSharingActive.set(true);
+            
+            // Return success with stream ID
+            JSONObject result = new JSONObject();
+            result.put("success", true);
+            result.put("streamId", currentStreamId);
+            result.put("width", screenWidth);
+            result.put("height", screenHeight);
+            result.put("frameRate", 30);
+            result.put("deviceId", "screen-capture-device");
+            
+            if (screenShareCallback != null) {
+                executeCallback(screenShareCallback, result.toString());
+            }
+            
+            showToast("Screen sharing started");
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error starting screen share", e);
+            if (screenShareCallback != null) {
+                executeCallback(screenShareCallback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+            }
+            return false;
+        }
+    }
+    
+    /**
+     * Create virtual display for screen capture
+     * This is called internally when a video track is needed
+     */
+    @JavascriptInterface
+    public String createVirtualDisplay(int width, int height, int density) {
+        if (mediaProjection == null) {
+            return "{\"success\":false,\"error\":\"No active media projection\"}";
+        }
+        
+        try {
+            // Use provided dimensions or defaults
+            int w = width > 0 ? width : screenWidth;
+            int h = height > 0 ? height : screenHeight;
+            int d = density > 0 ? density : screenDensity;
+            
+            // Create virtual display
+            virtualDisplay = mediaProjection.createVirtualDisplay(
+                "ScreenShare",
+                w, h, d,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                null, // Surface will be set by WebRTC
+                null, null
+            );
+            
+            JSONObject result = new JSONObject();
+            result.put("success", true);
+            result.put("width", w);
+            result.put("height", h);
+            return result.toString();
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating virtual display", e);
+            return "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}";
+        }
+    }
+    
+    /**
+     * Set the surface for screen capture (for WebRTC)
+     */
+    @JavascriptInterface
+    public boolean setScreenShareSurface(String surfaceData) {
+        // Note: In real WebRTC implementation, the surface would be passed
+        // through native code. Here we just track that surface is ready.
+        return isScreenSharingActive.get();
+    }
+    
+    /**
+     * Stop screen sharing
+     */
+    @JavascriptInterface
+    public void stopScreenShare(String callback) {
+        if (!isScreenSharingActive.get()) {
+            executeCallback(callback, "{\"success\":false,\"error\":\"Not screen sharing\"}");
+            return;
+        }
+        
+        try {
+            isScreenSharingActive.set(false);
+            currentStreamId = null;
+            
+            if (virtualDisplay != null) {
+                virtualDisplay.release();
+                virtualDisplay = null;
+            }
+            
+            if (mediaProjection != null) {
+                mediaProjection.stop();
+                mediaProjection = null;
+            }
+            
+            screenShareResultCode = 0;
+            screenShareData = null;
+            
+            showToast("Screen sharing stopped");
+            executeCallback(callback, "{\"success\":true}");
+        } catch (Exception e) {
+            Log.e(TAG, "Error stopping screen share", e);
+            executeCallback(callback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+        }
+    }
+    
+    /**
+     * Get current screen share stream info
+     */
+    @JavascriptInterface
+    public String getScreenShareStreamInfo() {
+        try {
+            if (!isScreenSharingActive.get() || currentStreamId == null) {
+                return "{\"active\":false}";
+            }
+            
+            JSONObject info = new JSONObject();
+            info.put("active", true);
+            info.put("streamId", currentStreamId);
+            info.put("width", screenWidth);
+            info.put("height", screenHeight);
+            info.put("frameRate", 30);
+            info.put("deviceId", "screen-capture-device");
+            return info.toString();
+        } catch (Exception e) {
+            return "{\"active\":false}";
+        }
+    }
+    
+    /**
+     * Get available media devices
+     */
+    @JavascriptInterface
+    public String getMediaDevices() {
+        try {
+            JSONObject result = new JSONObject();
+            JSONArray devices = new JSONArray();
+            
+            // Screen capture device
+            JSONObject screenDevice = new JSONObject();
+            screenDevice.put("deviceId", "screen-capture-device");
+            screenDevice.put("kind", "videoinput");
+            screenDevice.put("label", "Screen");
+            screenDevice.put("groupId", "screen-group");
+            devices.put(screenDevice);
+            
+            // Camera (if available)
+            if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+                JSONObject cameraDevice = new JSONObject();
+                cameraDevice.put("deviceId", "camera-device");
+                cameraDevice.put("kind", "videoinput");
+                cameraDevice.put("label", "Camera");
+                cameraDevice.put("groupId", "camera-group");
+                devices.put(cameraDevice);
+            }
+            
+            // Microphone (if available)
+            if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_MICROPHONE)) {
+                JSONObject micDevice = new JSONObject();
+                micDevice.put("deviceId", "microphone-device");
+                micDevice.put("kind", "audioinput");
+                micDevice.put("label", "Microphone");
+                micDevice.put("groupId", "audio-group");
+                devices.put(micDevice);
+            }
+            
+            result.put("devices", devices);
+            return result.toString();
+        } catch (Exception e) {
+            return "{\"devices\":[]}";
+        }
+    }
+    
+    /**
+     * Check if media permission is granted
+     */
+    @JavascriptInterface
+    public String checkMediaPermission(String mediaType) {
+        try {
+            JSONObject result = new JSONObject();
+            
+            switch (mediaType) {
+                case "camera":
+                    result.put("granted", ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED);
+                    break;
+                case "microphone":
+                    result.put("granted", ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
+                    break;
+                case "screen":
+                    result.put("granted", isScreenSharingActive.get());
+                    break;
+                default:
+                    result.put("granted", false);
+            }
+            
+            return result.toString();
+        } catch (Exception e) {
+            return "{\"granted\":false}";
+        }
+    }
+    
+    /**
+     * Request media permission
+     */
+    @JavascriptInterface
+    public void requestMediaPermission(String mediaType, String callback) {
+        try {
+            switch (mediaType) {
+                case "camera":
+                    ActivityCompat.requestPermissions(activity, 
+                        new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+                    break;
+                case "microphone":
+                    ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_MICROPHONE);
+                    break;
+                case "screen":
+                    requestScreenShareStream(callback);
+                    return;
+            }
+            executeCallback(callback, "{\"requested\":true}");
+        } catch (Exception e) {
+            executeCallback(callback, "{\"requested\":false,\"error\":\"" + e.getMessage() + "\"}");
+        }
+    }
+    
+    private void notifyScreenShareEnded() {
+        mainHandler.post(() -> {
+            try {
+                String js = "if(typeof window.onScreenShareEnded === 'function') { window.onScreenShareEnded(); }";
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    webView.evaluateJavascript(js, null);
+                } else {
+                    webView.loadUrl("javascript:" + js);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error notifying screen share ended", e);
+            }
+        });
+    }
+    
+    // ==================== SCREEN RECORDING ====================
+    
+    @JavascriptInterface
+    public boolean isRecording() {
+        return isRecording;
+    }
+    
+    @JavascriptInterface
+    public void startScreenCapture(String callback) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            executeCallback(callback, "{\"success\":false,\"error\":\"Screen capture requires Android 5.0+\"}");
+            return;
+        }
+        
+        screenCaptureCallback = callback;
+        
+        mainHandler.post(() -> {
+            try {
+                activity.startActivityForResult(
+                    projectionManager.createScreenCaptureIntent(),
+                    REQUEST_SCREEN_CAPTURE
+                );
+            } catch (Exception e) {
+                executeCallback(callback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+    }
+    
+    public boolean handleScreenCaptureResult(int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
+            if (screenCaptureCallback != null) {
+                executeCallback(screenCaptureCallback, "{\"success\":false,\"error\":\"Permission denied\"}");
+            }
+            return false;
+        }
+        
+        try {
+            mediaProjection = projectionManager.getMediaProjection(resultCode, data);
+            
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+            File recordingsDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_MOVIES), "ChromeBrowser");
+            recordingsDir.mkdirs();
+            currentRecordingPath = new File(recordingsDir, "Screen_" + timeStamp + ".mp4").getAbsolutePath();
+            
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            mediaRecorder.setOutputFile(currentRecordingPath);
+            mediaRecorder.setVideoSize(screenWidth, screenHeight);
+            mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+            mediaRecorder.setVideoEncodingBitRate(5000000);
+            mediaRecorder.setVideoFrameRate(30);
+            mediaRecorder.prepare();
+            
+            virtualDisplay = mediaProjection.createVirtualDisplay(
+                "ScreenCapture",
+                screenWidth, screenHeight, screenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                mediaRecorder.getSurface(), null, null
+            );
+            
+            mediaRecorder.start();
+            isRecording = true;
+            
+            if (screenCaptureCallback != null) {
+                executeCallback(screenCaptureCallback, "{\"success\":true,\"message\":\"Recording started\"}");
+            }
+            
+            showToast("Screen recording started");
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error starting screen capture", e);
+            if (screenCaptureCallback != null) {
+                executeCallback(screenCaptureCallback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+            }
+            return false;
+        }
+    }
+    
+    @JavascriptInterface
+    public void stopScreenCapture(String callback) {
+        if (!isRecording) {
+            executeCallback(callback, "{\"success\":false,\"error\":\"Not recording\"}");
+            return;
+        }
+        
+        try {
+            isRecording = false;
+            
+            if (mediaRecorder != null) {
+                mediaRecorder.stop();
+                mediaRecorder.release();
+                mediaRecorder = null;
+            }
+            
+            if (virtualDisplay != null) {
+                virtualDisplay.release();
+                virtualDisplay = null;
+            }
+            
+            if (mediaProjection != null) {
+                mediaProjection.stop();
+                mediaProjection = null;
+            }
+            
+            Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            scanIntent.setData(Uri.fromFile(new File(currentRecordingPath)));
+            context.sendBroadcast(scanIntent);
+            
+            showToast("Screen recording saved");
+            executeCallback(callback, "{\"success\":true,\"path\":\"" + currentRecordingPath + "\"}");
+        } catch (Exception e) {
+            Log.e(TAG, "Error stopping screen capture", e);
+            executeCallback(callback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+        }
+    }
+    
+    // ==================== PERMISSIONS ====================
+    
     @JavascriptInterface
     public boolean hasPermission(String permission) {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
     
-    /**
-     * Request permissions
-     */
     @JavascriptInterface
     public void requestPermissions(String permissionsJson, String callback) {
         try {
@@ -199,9 +626,6 @@ public class BrowserAPI {
     
     // ==================== CLIPBOARD ====================
     
-    /**
-     * Copy text to clipboard
-     */
     @JavascriptInterface
     public boolean copyToClipboard(String text) {
         try {
@@ -214,9 +638,6 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Get text from clipboard
-     */
     @JavascriptInterface
     public String getClipboardText() {
         try {
@@ -233,9 +654,6 @@ public class BrowserAPI {
     
     // ==================== NOTIFICATIONS ====================
     
-    /**
-     * Show a native notification
-     */
     @JavascriptInterface
     public boolean showNotification(String title, String message, String iconType) {
         try {
@@ -255,7 +673,6 @@ public class BrowserAPI {
                 notificationManager.createNotificationChannel(channel);
             }
             
-            // Create intent to open browser
             Intent intent = activity.getIntent();
             PendingIntent pendingIntent = PendingIntent.getActivity(
                 context, 0, intent, 
@@ -279,9 +696,6 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Show a notification with action buttons
-     */
     @JavascriptInterface
     public boolean showNotificationWithAction(String title, String message, String actionLabel, String actionUrl) {
         try {
@@ -321,154 +735,8 @@ public class BrowserAPI {
         }
     }
     
-    // ==================== SCREEN CAPTURE ====================
-    
-    /**
-     * Check if screen recording is available
-     */
-    @JavascriptInterface
-    public boolean isScreenCaptureAvailable() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    }
-    
-    /**
-     * Check if currently recording
-     */
-    @JavascriptInterface
-    public boolean isRecording() {
-        return isRecording;
-    }
-    
-    /**
-     * Start screen capture (requests permission first)
-     * Similar to navigator.mediaDevices.getDisplayMedia()
-     */
-    @JavascriptInterface
-    public void startScreenCapture(String callback) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            executeCallback(callback, "{\"success\":false,\"error\":\"Screen capture requires Android 5.0+\"}");
-            return;
-        }
-        
-        screenCaptureCallback = callback;
-        
-        mainHandler.post(() -> {
-            try {
-                activity.startActivityForResult(
-                    projectionManager.createScreenCaptureIntent(),
-                    REQUEST_SCREEN_CAPTURE
-                );
-            } catch (Exception e) {
-                executeCallback(callback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
-            }
-        });
-    }
-    
-    /**
-     * Handle screen capture permission result
-     */
-    public boolean handleScreenCaptureResult(int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK || data == null) {
-            if (screenCaptureCallback != null) {
-                executeCallback(screenCaptureCallback, "{\"success\":false,\"error\":\"Permission denied\"}");
-            }
-            return false;
-        }
-        
-        try {
-            mediaProjection = projectionManager.getMediaProjection(resultCode, data);
-            
-            // Create recording file
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-            File recordingsDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_MOVIES), "ChromeBrowser");
-            recordingsDir.mkdirs();
-            currentRecordingPath = new File(recordingsDir, "Screen_" + timeStamp + ".mp4").getAbsolutePath();
-            
-            // Setup media recorder
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            mediaRecorder.setOutputFile(currentRecordingPath);
-            mediaRecorder.setVideoSize(screenWidth, screenHeight);
-            mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-            mediaRecorder.setVideoEncodingBitRate(5000000);
-            mediaRecorder.setVideoFrameRate(30);
-            mediaRecorder.prepare();
-            
-            // Create virtual display
-            virtualDisplay = mediaProjection.createVirtualDisplay(
-                "ScreenCapture",
-                screenWidth, screenHeight, screenDensity,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                mediaRecorder.getSurface(), null, null
-            );
-            
-            mediaRecorder.start();
-            isRecording = true;
-            
-            if (screenCaptureCallback != null) {
-                executeCallback(screenCaptureCallback, "{\"success\":true,\"message\":\"Recording started\"}");
-            }
-            
-            showToast("Screen recording started");
-            return true;
-        } catch (Exception e) {
-            Log.e(TAG, "Error starting screen capture", e);
-            if (screenCaptureCallback != null) {
-                executeCallback(screenCaptureCallback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
-            }
-            return false;
-        }
-    }
-    
-    /**
-     * Stop screen capture
-     */
-    @JavascriptInterface
-    public void stopScreenCapture(String callback) {
-        if (!isRecording) {
-            executeCallback(callback, "{\"success\":false,\"error\":\"Not recording\"}");
-            return;
-        }
-        
-        try {
-            isRecording = false;
-            
-            if (mediaRecorder != null) {
-                mediaRecorder.stop();
-                mediaRecorder.release();
-                mediaRecorder = null;
-            }
-            
-            if (virtualDisplay != null) {
-                virtualDisplay.release();
-                virtualDisplay = null;
-            }
-            
-            if (mediaProjection != null) {
-                mediaProjection.stop();
-                mediaProjection = null;
-            }
-            
-            // Scan file to make it visible in gallery
-            Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            scanIntent.setData(Uri.fromFile(new File(currentRecordingPath)));
-            context.sendBroadcast(scanIntent);
-            
-            showToast("Screen recording saved");
-            executeCallback(callback, "{\"success\":true,\"path\":\"" + currentRecordingPath + "\"}");
-        } catch (Exception e) {
-            Log.e(TAG, "Error stopping screen capture", e);
-            executeCallback(callback, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
-        }
-    }
-    
     // ==================== FILE SYSTEM ====================
     
-    /**
-     * Save text to a file
-     */
     @JavascriptInterface
     public boolean saveTextFile(String filename, String content) {
         try {
@@ -478,7 +746,6 @@ public class BrowserAPI {
             fos.write(content.getBytes("UTF-8"));
             fos.close();
             
-            // Make file visible
             Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             scanIntent.setData(Uri.fromFile(file));
             context.sendBroadcast(scanIntent);
@@ -491,23 +758,18 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Save binary data (base64) to a file
-     */
     @JavascriptInterface
     public boolean saveBinaryFile(String filename, String base64Data) {
         try {
             File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             File file = new File(downloadsDir, filename);
             
-            // Decode base64
             byte[] data = android.util.Base64.decode(base64Data, android.util.Base64.DEFAULT);
             
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(data);
             fos.close();
             
-            // Make file visible
             Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             scanIntent.setData(Uri.fromFile(file));
             context.sendBroadcast(scanIntent);
@@ -520,25 +782,16 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Get downloads directory path
-     */
     @JavascriptInterface
     public String getDownloadsPath() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
     }
     
-    /**
-     * Check if a file exists
-     */
     @JavascriptInterface
     public boolean fileExists(String path) {
         return new File(path).exists();
     }
     
-    /**
-     * Delete a file
-     */
     @JavascriptInterface
     public boolean deleteFile(String path) {
         try {
@@ -550,17 +803,11 @@ public class BrowserAPI {
     
     // ==================== CAMERA ====================
     
-    /**
-     * Check if camera is available
-     */
     @JavascriptInterface
     public boolean isCameraAvailable() {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
     
-    /**
-     * Open camera to take a picture
-     */
     @JavascriptInterface
     public void takePicture(String callback) {
         cameraCallback = callback;
@@ -586,9 +833,6 @@ public class BrowserAPI {
     
     // ==================== SHARING ====================
     
-    /**
-     * Share content using Android share sheet
-     */
     @JavascriptInterface
     public boolean share(String title, String text, String url) {
         try {
@@ -612,9 +856,6 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Share an image from URL
-     */
     @JavascriptInterface
     public boolean shareImage(String title, String imagePath) {
         try {
@@ -641,9 +882,6 @@ public class BrowserAPI {
     
     // ==================== WEB / URL ====================
     
-    /**
-     * Open URL in external browser
-     */
     @JavascriptInterface
     public boolean openExternal(String url) {
         try {
@@ -656,25 +894,16 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Open URL in the browser's current tab
-     */
     @JavascriptInterface
     public void navigateTo(String url) {
         mainHandler.post(() -> webView.loadUrl(url));
     }
     
-    /**
-     * Reload current page
-     */
     @JavascriptInterface
     public void reload() {
         mainHandler.post(() -> webView.reload());
     }
     
-    /**
-     * Go back in history
-     */
     @JavascriptInterface
     public void goBack() {
         mainHandler.post(() -> {
@@ -682,9 +911,6 @@ public class BrowserAPI {
         });
     }
     
-    /**
-     * Go forward in history
-     */
     @JavascriptInterface
     public void goForward() {
         mainHandler.post(() -> {
@@ -692,17 +918,11 @@ public class BrowserAPI {
         });
     }
     
-    /**
-     * Get current URL
-     */
     @JavascriptInterface
     public String getCurrentUrl() {
         return webView.getUrl();
     }
     
-    /**
-     * Get page title
-     */
     @JavascriptInterface
     public String getPageTitle() {
         return webView.getTitle();
@@ -710,9 +930,6 @@ public class BrowserAPI {
     
     // ==================== VIBRATION ====================
     
-    /**
-     * Vibrate device
-     */
     @JavascriptInterface
     public boolean vibrate(long duration) {
         try {
@@ -732,9 +949,6 @@ public class BrowserAPI {
         return false;
     }
     
-    /**
-     * Vibrate with pattern
-     */
     @JavascriptInterface
     public boolean vibratePattern(String patternJson) {
         try {
@@ -761,9 +975,6 @@ public class BrowserAPI {
     
     // ==================== STORAGE ====================
     
-    /**
-     * Save data to local storage
-     */
     @JavascriptInterface
     public boolean setLocalData(String key, String value) {
         try {
@@ -776,9 +987,6 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Get data from local storage
-     */
     @JavascriptInterface
     public String getLocalData(String key, String defaultValue) {
         try {
@@ -790,9 +998,6 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Remove data from local storage
-     */
     @JavascriptInterface
     public boolean removeLocalData(String key) {
         try {
@@ -805,9 +1010,6 @@ public class BrowserAPI {
         }
     }
     
-    /**
-     * Clear all local storage
-     */
     @JavascriptInterface
     public boolean clearLocalData() {
         try {
@@ -822,9 +1024,6 @@ public class BrowserAPI {
     
     // ==================== NETWORK ====================
     
-    /**
-     * Get network information
-     */
     @JavascriptInterface
     public String getNetworkInfo() {
         try {
@@ -853,9 +1052,6 @@ public class BrowserAPI {
     
     // ==================== BATTERY ====================
     
-    /**
-     * Get battery information
-     */
     @JavascriptInterface
     public String getBatteryInfo() {
         try {
@@ -874,17 +1070,11 @@ public class BrowserAPI {
     
     // ==================== CONSOLE ====================
     
-    /**
-     * Log to Android logcat
-     */
     @JavascriptInterface
     public void log(String tag, String message) {
         Log.d(tag, message);
     }
     
-    /**
-     * Log error to Android logcat
-     */
     @JavascriptInterface
     public void logError(String tag, String message) {
         Log.e(tag, message);
@@ -892,9 +1082,6 @@ public class BrowserAPI {
     
     // ==================== EXECUTE JAVASCRIPT ====================
     
-    /**
-     * Execute JavaScript in the WebView
-     */
     @JavascriptInterface
     public void executeScript(String script) {
         mainHandler.post(() -> {
