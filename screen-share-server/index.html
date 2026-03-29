@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Share Viewer - Chrome Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 24px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #e0e0e0;
+        }
+        
+        .panel {
+            display: none;
+        }
+        
+        .panel.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(66, 133, 244, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-danger {
+            background: #ea4335;
+            color: white;
+        }
+        
+        .rooms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .room-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .room-item:hover {
+            background: #e8f0fe;
+        }
+        
+        .room-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .room-info p {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .room-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-dot.active {
+            background: #34a853;
+        }
+        
+        .status-dot.inactive {
+            background: #999;
+        }
+        
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        
+        #screenVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .video-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #666;
+        }
+        
+        .video-placeholder svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .room-code {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .room-code span {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: #4285f4;
+        }
+        
+        .room-code button {
+            padding: 8px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .controls .btn {
+            flex: 1;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background: #333;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .info-box {
+            background: #e8f0fe;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .info-box h4 {
+            font-size: 14px;
+            color: #4285f4;
+            margin-bottom: 8px;
+        }
+        
+        .info-box p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 16px;
+            }
+            
+            .header {
+                padding: 16px;
+            }
+            
+            .content {
+                padding: 16px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .room-code span {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖥️ Screen Share</h1>
+            <p>Share your screen from Chrome Browser App</p>
+        </div>
+        
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="showPanel('join')">Join Room</button>
+                <button class="tab" onclick="showPanel('host')">Create Room</button>
+                <button class="tab" onclick="showPanel('rooms')">Active Rooms</button>
+            </div>
+            
+            <!-- Join Panel -->
+            <div id="joinPanel" class="panel active">
+                <div class="form-group">
+                    <label>Room Code</label>
+                    <input type="text" id="joinRoomId" placeholder="Enter 8-character room code" maxlength="8">
+                </div>
+                <div class="form-group">
+                    <label>Your Name (optional)</label>
+                    <input type="text" id="joinName" placeholder="Guest">
+                </div>
+                <button class="btn btn-primary" onclick="joinRoom()">Join Room</button>
+            </div>
+            
+            <!-- Host Panel -->
+            <div id="hostPanel" class="panel">
+                <div class="info-box">
+                    <h4>📱 How to share from Chrome Browser App</h4>
+                    <p>1. Open Chrome Browser App on your Android device<br>
+                    2. Go to the video call website<br>
+                    3. The app will generate a room code<br>
+                    4. Share the code with viewers</p>
+                </div>
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="hostName" placeholder="Host">
+                </div>
+                <button class="btn btn-primary" onclick="createRoom()">Create Room</button>
+            </div>
+            
+            <!-- Rooms Panel -->
+            <div id="roomsPanel" class="panel">
+                <div class="rooms-list" id="roomsList">
+                    <p style="text-align: center; color: #666; padding: 20px;">Loading rooms...</p>
+                </div>
+                <button class="btn btn-secondary" onclick="loadRooms()" style="margin-top: 16px;">Refresh</button>
+            </div>
+            
+            <!-- Viewer Panel (shown when joined) -->
+            <div id="viewerPanel" class="panel">
+                <div class="room-code">
+                    <span id="currentRoomCode">--------</span>
+                    <button onclick="copyRoomCode()">Copy</button>
+                </div>
+                
+                <div class="video-container">
+                    <video id="screenVideo" autoplay playsinline></video>
+                    <div class="video-placeholder" id="videoPlaceholder">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+                        </svg>
+                        <p>Waiting for screen share...</p>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="toggleFullscreen()">Fullscreen</button>
+                    <button class="btn btn-danger" onclick="leaveRoom()">Leave</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // Configuration
+        const API_URL = window.location.pathname.replace('index.html', 'api.php');
+        let currentRoom = null;
+        let currentUserId = null;
+        let peerConnection = null;
+        let pollInterval = null;
+        
+        // WebRTC Configuration
+        const rtcConfig = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+        
+        // Tab Navigation
+        function showPanel(name) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(name + 'Panel').classList.add('active');
+            event.target.classList.add('active');
+            
+            if (name === 'rooms') {
+                loadRooms();
+            }
+        }
+        
+        // API Calls
+        async function apiCall(action, data = {}) {
+            const url = new URL(API_URL, window.location.origin);
+            url.searchParams.append('action', action);
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(data)
+            });
+            
+            return response.json();
+        }
+        
+        async function apiGet(action, params = {}) {
+            const url = new URL(API_URL, window.location.origin);
+            url.searchParams.append('action', action);
+            Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
+            
+            const response = await fetch(url);
+            return response.json();
+        }
+        
+        // Room Management
+        async function createRoom() {
+            const name = document.getElementById('hostName').value || 'Host';
+            const result = await apiCall('create_room', { user_name: name });
+            
+            if (result.success) {
+                currentRoom = result.room;
+                currentUserId = result.your_user_id;
+                showViewer();
+                showToast('Room created! Share code: ' + currentRoom.id);
+            } else {
+                showToast('Error: ' + result.error);
+            }
+        }
+        
+        async function joinRoom() {
+            const roomId = document.getElementById('joinRoomId').value.toUpperCase();
+            const name = document.getElementById('joinName').value || 'Guest';
+            
+            if (roomId.length !== 8) {
+                showToast('Please enter a valid 8-character room code');
+                return;
+            }
+            
+            const result = await apiCall('join_room', { room_id: roomId, user_name: name });
+            
+            if (result.success) {
+                currentRoom = result.room;
+                currentUserId = result.your_user_id;
+                showViewer();
+                startPolling();
+                showToast('Joined room successfully!');
+            } else {
+                showToast('Error: ' + result.error);
+            }
+        }
+        
+        async function leaveRoom() {
+            if (currentRoom && currentUserId) {
+                await apiCall('leave_room', { 
+                    room_id: currentRoom.id, 
+                    user_id: currentUserId 
+                });
+            }
+            
+            stopPolling();
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            
+            currentRoom = null;
+            currentUserId = null;
+            
+            document.getElementById('viewerPanel').classList.remove('active');
+            document.getElementById('joinPanel').classList.add('active');
+            document.querySelector('.tab').classList.add('active');
+            
+            showToast('Left room');
+        }
+        
+        async function loadRooms() {
+            const result = await apiGet('list_rooms');
+            const list = document.getElementById('roomsList');
+            
+            if (result.success && result.rooms.length > 0) {
+                list.innerHTML = result.rooms.map(room => `
+                    <div class="room-item" onclick="quickJoin('${room.id}')">
+                        <div class="room-info">
+                            <h3>Room ${room.id}</h3>
+                            <p>${room.user_count} user(s) • ${new Date(room.created_at * 1000).toLocaleTimeString()}</p>
+                        </div>
+                        <div class="room-status">
+                            <span class="status-dot ${room.screen_share_active ? 'active' : 'inactive'}"></span>
+                            <span>${room.screen_share_active ? 'Sharing' : 'Waiting'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No active rooms</p>';
+            }
+        }
+        
+        function quickJoin(roomId) {
+            document.getElementById('joinRoomId').value = roomId;
+            showPanel('join');
+        }
+        
+        // Viewer
+        function showViewer() {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('viewerPanel').classList.add('active');
+            document.getElementById('currentRoomCode').textContent = currentRoom.id;
+            
+            setupWebRTC();
+        }
+        
+        async function setupWebRTC() {
+            peerConnection = new RTCPeerConnection(rtcConfig);
+            
+            peerConnection.ontrack = (event) => {
+                const video = document.getElementById('screenVideo');
+                video.srcObject = event.streams[0];
+                document.getElementById('videoPlaceholder').style.display = 'none';
+                showToast('Screen share connected!');
+            };
+            
+            peerConnection.onicecandidate = async (event) => {
+                if (event.candidate) {
+                    await apiCall('update_ice', {
+                        room_id: currentRoom.id,
+                        user_id: currentUserId,
+                        candidates: JSON.stringify([event.candidate])
+                    });
+                }
+            };
+            
+            // Get offer from host
+            pollForOffer();
+        }
+        
+        async function pollForOffer() {
+            const result = await apiGet('get_offer', { room_id: currentRoom.id });
+            
+            if (result.success && result.active && result.offer) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(result.offer));
+                
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                
+                await apiCall('signal', {
+                    room_id: currentRoom.id,
+                    user_id: currentUserId,
+                    signal: 'answer',
+                    data: JSON.stringify(answer)
+                });
+                
+                // Poll for ICE candidates
+                pollForIce();
+            } else {
+                setTimeout(pollForOffer, 1000);
+            }
+        }
+        
+        async function pollForIce() {
+            const lastTimestamp = 0;
+            
+            pollInterval = setInterval(async () => {
+                const result = await apiGet('get_ice', { 
+                    room_id: currentRoom.id,
+                    after: lastTimestamp 
+                });
+                
+                if (result.success && result.candidates) {
+                    for (const ice of result.candidates) {
+                        if (ice.from !== currentUserId) {
+                            await peerConnection.addIceCandidate(new RTCIceCandidate(ice.candidate));
+                        }
+                    }
+                }
+            }, 500);
+        }
+        
+        function startPolling() {
+            // Already handled in pollForIce
+        }
+        
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+        }
+        
+        // Utilities
+        function copyRoomCode() {
+            navigator.clipboard.writeText(currentRoom.id);
+            showToast('Room code copied!');
+        }
+        
+        function toggleFullscreen() {
+            const video = document.getElementById('screenVideo');
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                video.parentElement.requestFullscreen();
+            }
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Initialize
+        loadRooms();
+    </script>
+</body>
+</html>

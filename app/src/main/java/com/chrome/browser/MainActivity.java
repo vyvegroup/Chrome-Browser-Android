@@ -257,6 +257,15 @@ public class MainActivity extends AppCompatActivity {
             }
             uiHandler.postDelayed(() -> swipeRefresh.setRefreshing(false), 1500);
         });
+        
+        // Only enable swipe refresh when WebView is at the top
+        swipeRefresh.setOnChildScrollUpCallback((parent, child) -> {
+            TabInfo tab = getCurrentTab();
+            if (tab != null && tab.webView != null) {
+                return tab.webView.getScrollY() > 0;
+            }
+            return false;
+        });
     }
 
     private void initViews() {
@@ -575,6 +584,10 @@ public class MainActivity extends AppCompatActivity {
             browserAPI = new BrowserAPI(this, webView);
         }
         webView.addJavascriptInterface(browserAPI, "ChromeBrowserAPI");
+        
+        // Add WebRTC API JavaScript Interface
+        WebRTCAPI webrtcAPI = new WebRTCAPI(this, webView);
+        webView.addJavascriptInterface(webrtcAPI, "WebRTCAPI");
 
         return webView;
     }
