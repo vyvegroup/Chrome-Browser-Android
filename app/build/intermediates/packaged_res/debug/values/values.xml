@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="black">#000000</color>
     <color name="chrome_background">#F1F3F4</color>
     <color name="chrome_background_dark">#303134</color>
     <color name="chrome_blue">#4285F4</color>
@@ -12,6 +13,9 @@
     <color name="chrome_surface">#FFFFFF</color>
     <color name="chrome_surface_dark">#202124</color>
     <color name="chrome_yellow">#FBBC05</color>
+    <color name="incognito_accent">#7BAAF7</color>
+    <color name="incognito_background">#343A40</color>
+    <color name="incognito_background_dark">#202124</color>
     <color name="md_theme_background">#FFFFFF</color>
     <color name="md_theme_error">#B3261E</color>
     <color name="md_theme_onBackground">#1F1F1F</color>
@@ -26,6 +30,8 @@
     <color name="md_theme_secondary">#5F6368</color>
     <color name="md_theme_secondaryContainer">#E8EAED</color>
     <color name="md_theme_surface">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="white">#FFFFFF</color>
     <string name="app_name">Chrome Browser</string>
     <string name="block_popups">Block pop-ups</string>
     <string name="bookmarks">Bookmarks</string>

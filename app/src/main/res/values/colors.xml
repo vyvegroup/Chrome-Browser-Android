@@ -16,6 +16,11 @@
     <color name="chrome_background">#F1F3F4</color>
     <color name="chrome_background_dark">#303134</color>
     
+    <!-- Incognito Colors -->
+    <color name="incognito_background">#343A40</color>
+    <color name="incognito_background_dark">#202124</color>
+    <color name="incognito_accent">#7BAAF7</color>
+    
     <!-- Material Theme Colors -->
     <color name="md_theme_primary">#4285F4</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
@@ -31,4 +36,9 @@
     <color name="md_theme_onSurface">#1F1F1F</color>
     <color name="md_theme_error">#B3261E</color>
     <color name="md_theme_onError">#FFFFFF</color>
+    
+    <!-- Additional -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
 </resources>

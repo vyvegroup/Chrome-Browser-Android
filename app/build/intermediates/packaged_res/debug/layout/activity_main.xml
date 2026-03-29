@@ -7,206 +7,204 @@
     android:background="#FFFFFF"
     android:fitsSystemWindows="true">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
+    <!-- Fullscreen Container for Video -->
+    <FrameLayout
+        android:id="@+id/fullscreenContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        app:elevation="0dp">
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="#000000" />
 
-        <!-- Status Bar Area -->
-        <View
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- App Bar -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBar"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:background="#FFFFFF" />
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            app:elevation="0dp">
 
-        <!-- URL Bar Container -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="4dp"
-            app:cardBackgroundColor="#F1F3F4"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
+            <!-- Status Bar -->
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_height="24dp"
+                android:background="#FFFFFF" />
 
-                <!-- Page Security Icon -->
-                <ImageButton
-                    android:id="@+id/btnSecurity"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_lock"
-                    android:contentDescription="Security"
-                    android:tint="#5F6368" />
+            <!-- URL Bar -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
+                app:cardBackgroundColor="#F1F3F4"
+                app:cardCornerRadius="26dp"
+                app:cardElevation="0dp">
 
-                <!-- URL Input -->
-                <EditText
-                    android:id="@+id/urlBar"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:hint="Search or type URL"
-                    android:imeOptions="actionGo"
-                    android:inputType="textUri"
-                    android:maxLines="1"
-                    android:textColor="#202124"
-                    android:textColorHint="#5F6368"
-                    android:textSize="15sp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <!-- Voice Search / Refresh Button -->
-                <ImageButton
-                    android:id="@+id/btnVoiceSearch"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_mic"
-                    android:contentDescription="Voice Search"
-                    android:tint="#5F6368" />
+                    <!-- Security Icon -->
+                    <ImageView
+                        android:id="@+id/securityIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="16dp"
+                        android:src="@drawable/ic_lock"
+                        android:contentDescription="Security" />
 
-                <!-- Tabs Button -->
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp">
+                    <!-- URL Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/urlBarLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        app:boxBackgroundMode="none"
+                        app:hintEnabled="false">
 
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/urlBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="Search or type URL"
+                            android:imeOptions="actionGo"
+                            android:inputType="textUri"
+                            android:maxLines="1"
+                            android:textColor="#202124"
+                            android:textColorHint="#5F6368"
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Search/Voice -->
                     <ImageButton
-                        android:id="@+id/btnTabs"
+                        android:id="@+id/btnSearch"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_tab"
-                        android:contentDescription="Tabs"
+                        android:src="@drawable/ic_mic"
+                        android:contentDescription="Voice Search"
                         android:tint="#5F6368" />
 
-                    <TextView
-                        android:id="@+id/tabCount"
+                    <!-- Tab Count Chip -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/tabCountChip"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="4dp"
                         android:text="1"
-                        android:textColor="#202124"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="#D3E3FD"
+                        app:chipCornerRadius="12dp"
+                        app:chipMinHeight="32dp"
+                        app:chipStartPadding="8dp"
+                        app:chipEndPadding="8dp" />
 
-                </FrameLayout>
+                    <!-- Menu -->
+                    <ImageButton
+                        android:id="@+id/btnMenu"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_more"
+                        android:contentDescription="Menu"
+                        android:tint="#5F6368" />
 
-                <!-- More Menu -->
-                <ImageButton
-                    android:id="@+id/btnMenu"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_more"
-                    android:contentDescription="Menu"
-                    android:tint="#5F6368" />
+                </LinearLayout>
 
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-        </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Tab Layout (Hidden by default) -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:progressTint="#4285F4"
+            android:progressBackgroundTint="#D3E3FD"
+            android:visibility="gone" />
+
+        <!-- WebView Container -->
+        <FrameLayout
+            android:id="@+id/webViewContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:visibility="gone"
-            app:tabMode="scrollable"
-            app:tabTextAppearance="@style/TabTextAppearance" />
+            android:layout_weight="1" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <!-- Bottom Navigation Bar -->
+        <LinearLayout
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="#FFFFFF"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="5">
 
-    <!-- Progress Bar -->
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginTop="72dp"
-        android:progressTint="#4285F4"
-        android:visibility="gone" />
+            <ImageButton
+                android:id="@+id/btnHome"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_home_chrome"
+                android:contentDescription="Home"
+                android:tint="#5F6368" />
 
-    <!-- WebView Container -->
-    <FrameLayout
-        android:id="@+id/webViewContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="76dp"
-        android:layout_marginBottom="48dp" />
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Back"
+                android:tint="#5F6368" />
 
-    <!-- Bottom Navigation Bar (Like Chrome) -->
-    <LinearLayout
-        android:id="@+id/bottomBar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_gravity="bottom"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:weightSum="5">
+            <ImageButton
+                android:id="@+id/btnForward"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_forward"
+                android:contentDescription="Forward"
+                android:tint="#5F6368" />
 
-        <!-- Home / Back -->
-        <ImageButton
-            android:id="@+id/btnHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_home_chrome"
-            android:contentDescription="Home"
-            android:tint="#5F6368" />
+            <ImageButton
+                android:id="@+id/btnRefresh"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_refresh"
+                android:contentDescription="Refresh"
+                android:tint="#5F6368" />
 
-        <!-- Back -->
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_back"
-            android:contentDescription="Back"
-            android:tint="#5F6368" />
+            <ImageButton
+                android:id="@+id/btnTabs"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_grid"
+                android:contentDescription="Tabs"
+                android:tint="#5F6368" />
 
-        <!-- Forward -->
-        <ImageButton
-            android:id="@+id/btnForward"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_forward"
-            android:contentDescription="Forward"
-            android:tint="#5F6368"
-            android:alpha="0.3" />
-
-        <!-- Refresh -->
-        <ImageButton
-            android:id="@+id/btnRefresh"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_refresh"
-            android:contentDescription="Refresh"
-            android:tint="#5F6368" />
-
-        <!-- Tabs Overview -->
-        <ImageButton
-            android:id="@+id/btnTabsOverview"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_grid"
-            android:contentDescription="Tabs"
-            android:tint="#5F6368" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -220,6 +218,7 @@
         android:src="@drawable/ic_add"
         android:contentDescription="New Tab"
         app:backgroundTint="#4285F4"
-        app:tint="#FFFFFF" />
+        app:tint="#FFFFFF"
+        app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
