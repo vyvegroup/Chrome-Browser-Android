@@ -3222,7 +3222,6 @@ id animateToEnd
 id animateToStart
 id antiClockwise
 id anticipate
-id appBar
 id arc
 id asConfigured
 id async
@@ -3243,7 +3242,6 @@ id bookmarkUrl
 id bookmarkUrlInput
 id bookmarksRecyclerView
 id bottom
-id bottomBar
 id bounce
 id bounceBoth
 id bounceEnd
@@ -3258,7 +3256,7 @@ id btnForward
 id btnHome
 id btnMenu
 id btnRefresh
-id btnSearch
+id btnShowUrl
 id btnTabs
 id buttonPanel
 id cache_measures
@@ -3338,6 +3336,7 @@ id elastic
 id embed
 id emptyBookmarks
 id emptyHistory
+id emptyTabs
 id end
 id endToStart
 id enterAlways
@@ -3350,7 +3349,6 @@ id extensionIcon
 id extensionName
 id extensionSwitch
 id extensionsRecyclerView
-id fabNewTab
 id fabNewTabGrid
 id fade
 id fill
@@ -3365,6 +3363,8 @@ id fitXY
 id fixed
 id flip
 id floating
+id floatingBarContainer
+id floatingUrlCard
 id forever
 id fragment_container_view_tag
 id frost
@@ -3378,6 +3378,8 @@ id graph_wrap
 id group_divider
 id grouping
 id groups
+id headerSecurityIcon
+id headerTitle
 id header_title
 id hideable
 id historyDate
@@ -3486,6 +3488,7 @@ id mtrl_picker_text_input_range_start
 id mtrl_picker_title_text
 id mtrl_view_tag_bottom_padding
 id multiply
+id navigationRow
 id navigation_bar_item_active_indicator_view
 id navigation_bar_item_icon_container
 id navigation_bar_item_icon_view
@@ -3527,6 +3530,7 @@ id outline
 id outward
 id overshoot
 id packed
+id pageHeader
 id parallax
 id parent
 id parentPanel
@@ -3541,7 +3545,7 @@ id pin
 id position
 id postLayout
 id pressed
-id progressBar
+id progressIndicator
 id progress_circular
 id progress_horizontal
 id radio
@@ -3553,6 +3557,7 @@ id right
 id rightToLeft
 id right_icon
 id right_side
+id rootLayout
 id rounded
 id row_index_key
 id save_non_transition_alpha
@@ -3620,7 +3625,6 @@ id supportScrollUp
 id switchAdBlock
 id switchDarkMode
 id switchDesktop
-id switchIncognito
 id switchJavaScript
 id tabCard
 id tabClose
@@ -3630,6 +3634,7 @@ id tabMode
 id tabTitle
 id tabUrl
 id tabsRecyclerView
+id tabsTitle
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
 id tag_accessibility_heading
@@ -4377,6 +4382,8 @@ style Base_Widget_MaterialComponents_Snackbar
 style Base_Widget_MaterialComponents_TextInputEditText
 style Base_Widget_MaterialComponents_TextInputLayout
 style Base_Widget_MaterialComponents_TextView
+style BottomSheetStyle
+style CardStyle
 style CardView
 style CardView_Dark
 style CardView_Light
@@ -4414,6 +4421,7 @@ style Platform_V21_AppCompat_Light
 style Platform_V25_AppCompat
 style Platform_V25_AppCompat_Light
 style Platform_Widget_AppCompat_Spinner
+style PrimaryButton
 style RtlOverlay_DialogWindowTitle_AppCompat
 style RtlOverlay_Widget_AppCompat_ActionBar_TitleItem
 style RtlOverlay_Widget_AppCompat_DialogTitle_Icon
@@ -4431,6 +4439,8 @@ style RtlOverlay_Widget_AppCompat_Search_DropDown_Text
 style RtlOverlay_Widget_AppCompat_SearchView_MagIcon
 style RtlUnderlay_Widget_AppCompat_ActionButton
 style RtlUnderlay_Widget_AppCompat_ActionButton_Overflow
+style SecondaryButton
+style ShapeAppearance_BottomSheet
 style ShapeAppearance_M3_Comp_Badge_Large_Shape
 style ShapeAppearance_M3_Comp_Badge_Shape
 style ShapeAppearance_M3_Comp_BottomAppBar_Container_Shape
@@ -4493,6 +4503,8 @@ style ShapeAppearanceOverlay_MaterialComponents_MaterialCalendar_Day
 style ShapeAppearanceOverlay_MaterialComponents_MaterialCalendar_Window_Fullscreen
 style ShapeAppearanceOverlay_MaterialComponents_MaterialCalendar_Year
 style ShapeAppearanceOverlay_MaterialComponents_TextInputLayout_FilledBox
+style SwitchStyle
+style TabChipStyle
 style TabTextAppearance
 style TextAppearance_AppCompat
 style TextAppearance_AppCompat_Body1
@@ -5208,6 +5220,7 @@ style Widget_MaterialComponents_Toolbar_PrimarySurface
 style Widget_MaterialComponents_Toolbar_Surface
 style Widget_MaterialComponents_Tooltip
 style Widget_Support_CoordinatorLayout
+style WindowAnimation
 styleable ActionBar background backgroundSplit backgroundStacked contentInsetEnd contentInsetEndWithActions contentInsetLeft contentInsetRight contentInsetStart contentInsetStartWithNavigation customNavigationLayout displayOptions divider elevation height hideOnContentScroll homeAsUpIndicator homeLayout icon indeterminateProgressStyle itemPadding logo navigationMode popupTheme progressBarPadding progressBarStyle subtitle subtitleTextStyle title titleTextStyle
 styleable ActionBarLayout android_layout_gravity
 styleable ActionMenuItemView android_minWidth

@@ -1,6 +1,8 @@
 package com.chrome.browser;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Context;
@@ -12,11 +14,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.transition.ChangeBounds;
+import android.transition.TransitionManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
@@ -31,7 +38,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,13 +45,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -63,17 +74,27 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "ChromeBrowserPrefs";
     private static final String KEY_BOOKMARKS = "bookmarks";
     private static final String KEY_HISTORY = "history";
+    private static final String KEY_TABS = "tabs";
+    private static final String KEY_CURRENT_TAB = "current_tab";
+    private static final String KEY_JAVASCRIPT = "javascript_enabled";
+    private static final String KEY_DESKTOP_MODE = "desktop_mode";
 
     // UI
     private FrameLayout webViewContainer;
-    private ProgressBar progressBar;
+    private LinearProgressIndicator progressIndicator;
     private TextInputEditText urlBar;
     private ImageView securityIcon;
-    private ImageButton btnBack, btnForward, btnRefresh, btnHome, btnMenu;
+    private ImageButton btnBack, btnForward, btnRefresh, btnHome, btnMenu, btnTabs;
     private Chip tabCountChip;
-    private FloatingActionButton fabNewTab;
-    private LinearLayout bottomBar;
-    private FrameLayout fullscreenContainer;
+    private LinearLayout navigationRow, floatingBarContainer;
+    private MaterialCardView floatingUrlCard, pageHeader;
+    private TextView headerTitle;
+    private ImageView headerSecurityIcon;
+    
+    // For animations
+    private boolean isUrlBarExpanded = true;
+    private float lastScrollY = 0;
+    private Handler uiHandler = new Handler(Looper.getMainLooper());
 
     // Tabs
     private List<TabInfo> tabs = new ArrayList<>();
@@ -104,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
             this.title = "New Tab";
             this.url = "about:blank";
         }
+        
+        TabInfo(String id, String url, String title, boolean isIncognito) {
+            this.id = id;
+            this.url = url;
+            this.title = title;
+            this.isIncognito = isIncognito;
+            this.webView = null;
+            this.favicon = null;
+        }
     }
 
     public static class Bookmark {
@@ -127,22 +157,42 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Enable edge-to-edge
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        loadSettings();
         loadBookmarks();
         loadHistory();
 
         initViews();
-        createNewTab("https://www.google.com", false);
         setupListeners();
+        
+        // Restore tabs or create new one
+        if (!restoreTabs()) {
+            createNewTab("https://www.google.com", false);
+        }
 
         if (getIntent() != null && getIntent().getData() != null) {
             loadUrl(getIntent().getData().toString());
         }
     }
+    
+    private void loadSettings() {
+        isJavaScriptEnabled = preferences.getBoolean(KEY_JAVASCRIPT, true);
+        isDesktopMode = preferences.getBoolean(KEY_DESKTOP_MODE, false);
+    }
+    
+    private void saveSettings() {
+        preferences.edit()
+            .putBoolean(KEY_JAVASCRIPT, isJavaScriptEnabled)
+            .putBoolean(KEY_DESKTOP_MODE, isDesktopMode)
+            .apply();
+    }
 
     private void initViews() {
         webViewContainer = findViewById(R.id.webViewContainer);
-        progressBar = findViewById(R.id.progressBar);
+        progressIndicator = findViewById(R.id.progressIndicator);
         urlBar = findViewById(R.id.urlBar);
         securityIcon = findViewById(R.id.securityIcon);
         btnBack = findViewById(R.id.btnBack);
@@ -150,10 +200,14 @@ public class MainActivity extends AppCompatActivity {
         btnRefresh = findViewById(R.id.btnRefresh);
         btnHome = findViewById(R.id.btnHome);
         btnMenu = findViewById(R.id.btnMenu);
+        btnTabs = findViewById(R.id.btnTabs);
         tabCountChip = findViewById(R.id.tabCountChip);
-        fabNewTab = findViewById(R.id.fabNewTab);
-        bottomBar = findViewById(R.id.bottomBar);
-        fullscreenContainer = findViewById(R.id.fullscreenContainer);
+        navigationRow = findViewById(R.id.navigationRow);
+        floatingBarContainer = findViewById(R.id.floatingBarContainer);
+        floatingUrlCard = findViewById(R.id.floatingUrlCard);
+        pageHeader = findViewById(R.id.pageHeader);
+        headerTitle = findViewById(R.id.headerTitle);
+        headerSecurityIcon = findViewById(R.id.headerSecurityIcon);
     }
 
     private void setupListeners() {
@@ -163,10 +217,17 @@ public class MainActivity extends AppCompatActivity {
                 if (!url.isEmpty()) {
                     loadUrl(formatUrl(url));
                     hideKeyboard();
+                    collapseUrlBar();
                 }
                 return true;
             }
             return false;
+        });
+
+        urlBar.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                expandUrlBar();
+            }
         });
 
         btnBack.setOnClickListener(v -> goBack());
@@ -175,14 +236,40 @@ public class MainActivity extends AppCompatActivity {
         btnHome.setOnClickListener(v -> loadUrl("https://www.google.com"));
         btnMenu.setOnClickListener(v -> showMenu());
         tabCountChip.setOnClickListener(v -> showTabsGrid());
-        fabNewTab.setOnClickListener(v -> createNewTab("https://www.google.com", isIncognitoMode));
+        btnTabs.setOnClickListener(v -> showTabsGrid());
+        
+        findViewById(R.id.btnShowUrl).setOnClickListener(v -> {
+            pageHeader.setVisibility(View.GONE);
+            floatingBarContainer.setVisibility(View.VISIBLE);
+            urlBar.requestFocus();
+            showKeyboard();
+        });
 
         registerForContextMenu(webViewContainer);
+        
+        // Touch listener to collapse URL bar when touching WebView
+        webViewContainer.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (urlBar.hasFocus()) {
+                    hideKeyboard();
+                    collapseUrlBar();
+                }
+            }
+            return false;
+        });
     }
 
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         if (imm != null) imm.hideSoftInputFromWindow(urlBar.getWindowToken(), 0);
+    }
+    
+    private void showKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            urlBar.requestFocus();
+            imm.showSoftInput(urlBar, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     private String formatUrl(String url) {
@@ -204,11 +291,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSecurityIcon(String url) {
-        if (url.startsWith("https://")) {
-            securityIcon.setImageResource(R.drawable.ic_lock);
-        } else {
-            securityIcon.setImageResource(R.drawable.ic_lock_open);
-        }
+        int icon = url.startsWith("https://") ? R.drawable.ic_lock : R.drawable.ic_lock_open;
+        securityIcon.setImageResource(icon);
+        headerSecurityIcon.setImageResource(icon);
     }
 
     private void goBack() {
@@ -216,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
         if (tab != null && tab.webView != null && tab.webView.canGoBack()) {
             tab.webView.goBack();
         } else {
-            Snackbar.make(bottomBar, "No previous page", Snackbar.LENGTH_SHORT).show();
+            showSnackbar("No previous page");
         }
     }
 
@@ -238,6 +323,32 @@ public class MainActivity extends AppCompatActivity {
         return tabs.get(currentTabIndex);
     }
 
+    private void showSnackbar(String message) {
+        Snackbar.make(floatingUrlCard, message, Snackbar.LENGTH_SHORT).show();
+    }
+    
+    private void expandUrlBar() {
+        if (!isUrlBarExpanded) {
+            navigationRow.setVisibility(View.VISIBLE);
+            navigationRow.setAlpha(0f);
+            navigationRow.animate().alpha(1f).setDuration(200).start();
+            isUrlBarExpanded = true;
+        }
+    }
+    
+    private void collapseUrlBar() {
+        if (isUrlBarExpanded) {
+            navigationRow.animate()
+                .alpha(0f)
+                .setDuration(200)
+                .withEndAction(() -> {
+                    navigationRow.setVisibility(View.GONE);
+                })
+                .start();
+            isUrlBarExpanded = false;
+        }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private void createNewTab(String url, boolean incognito) {
         WebView webView = createWebView(incognito);
@@ -247,6 +358,22 @@ public class MainActivity extends AppCompatActivity {
         webViewContainer.removeAllViews();
         webViewContainer.addView(webView);
         if (url != null) webView.loadUrl(url);
+        updateTabCount();
+        updateIncognitoUI();
+        saveTabs();
+    }
+    
+    @SuppressLint("SetJavaScriptEnabled")
+    private void createNewTabFromSaved(TabInfo savedTab) {
+        WebView webView = createWebView(savedTab.isIncognito);
+        TabInfo tab = new TabInfo(savedTab.id, webView, savedTab.isIncognito);
+        tab.title = savedTab.title;
+        tab.url = savedTab.url;
+        tabs.add(tab);
+        currentTabIndex = tabs.size() - 1;
+        webViewContainer.removeAllViews();
+        webViewContainer.addView(webView);
+        webView.loadUrl(savedTab.url);
         updateTabCount();
         updateIncognitoUI();
     }
@@ -283,7 +410,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                progressBar.setVisibility(View.VISIBLE);
+                progressIndicator.setVisibility(View.VISIBLE);
+                progressIndicator.setProgress(0);
                 urlBar.setText(url);
                 updateSecurityIcon(url);
                 TabInfo t = findTab(view);
@@ -293,12 +421,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                progressBar.setVisibility(View.GONE);
+                progressIndicator.hide();
                 updateNavigationButtons();
                 String title = view.getTitle() != null ? view.getTitle() : "Page";
                 TabInfo t = findTab(view);
-                if (t != null) { t.title = title; t.url = url; }
+                if (t != null) { 
+                    t.title = title; 
+                    t.url = url;
+                    updateHeader(t);
+                }
                 if (!isIncognitoMode && t != null && !t.isIncognito) addToHistory(title, url);
+                saveTabs();
             }
 
             @Override
@@ -312,11 +445,16 @@ public class MainActivity extends AppCompatActivity {
 
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public void onProgressChanged(WebView view, int p) { progressBar.setProgress(p); }
+            public void onProgressChanged(WebView view, int p) {
+                progressIndicator.setProgress(p);
+            }
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 TabInfo t = findTab(view);
-                if (t != null) t.title = title != null ? title : "Page";
+                if (t != null) {
+                    t.title = title != null ? title : "Page";
+                    updateHeader(t);
+                }
             }
             @Override
             public void onReceivedIcon(WebView view, Bitmap icon) {
@@ -326,11 +464,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 webViewContainer.setVisibility(View.GONE);
+                FrameLayout fullscreenContainer = findViewById(R.id.fullscreenContainer);
                 fullscreenContainer.setVisibility(View.VISIBLE);
                 fullscreenContainer.addView(view);
             }
             @Override
             public void onHideCustomView() {
+                FrameLayout fullscreenContainer = findViewById(R.id.fullscreenContainer);
                 fullscreenContainer.removeAllViews();
                 fullscreenContainer.setVisibility(View.GONE);
                 webViewContainer.setVisibility(View.VISIBLE);
@@ -350,6 +490,13 @@ public class MainActivity extends AppCompatActivity {
 
         return webView;
     }
+    
+    private void updateHeader(TabInfo tab) {
+        headerTitle.setText(tab.title);
+        if (tab.favicon != null) {
+            // Could set favicon here
+        }
+    }
 
     private TabInfo findTab(WebView w) {
         for (TabInfo t : tabs) if (t.webView == w) return t;
@@ -366,14 +513,14 @@ public class MainActivity extends AppCompatActivity {
             d.setContentView(v);
             v.findViewById(R.id.action_open_image).setOnClickListener(x -> { createNewTab(extra, isIncognitoMode); d.dismiss(); });
             v.findViewById(R.id.action_save_image).setOnClickListener(x -> { if(checkPermission()) downloadFile(extra, "Mozilla/5.0", "image", "image/*"); d.dismiss(); });
-            v.findViewById(R.id.action_copy_image_url).setOnClickListener(x -> { copyToClipboard(extra); Snackbar.make(bottomBar, "URL copied", Snackbar.LENGTH_SHORT).show(); d.dismiss(); });
+            v.findViewById(R.id.action_copy_image_url).setOnClickListener(x -> { copyToClipboard(extra); showSnackbar("URL copied"); d.dismiss(); });
             v.findViewById(R.id.action_search_image).setOnClickListener(x -> { createNewTab("https://www.google.com/searchbyimage?image_url=" + Uri.encode(extra), isIncognitoMode); d.dismiss(); });
         } else if (type == WebView.HitTestResult.SRC_ANCHOR_TYPE) {
             View v = LayoutInflater.from(this).inflate(R.layout.context_menu_link, null);
             d.setContentView(v);
             v.findViewById(R.id.action_open_new_tab).setOnClickListener(x -> { createNewTab(extra, isIncognitoMode); d.dismiss(); });
             v.findViewById(R.id.action_open_incognito).setOnClickListener(x -> { createNewTab(extra, true); d.dismiss(); });
-            v.findViewById(R.id.action_copy_link).setOnClickListener(x -> { copyToClipboard(extra); Snackbar.make(bottomBar, "Link copied", Snackbar.LENGTH_SHORT).show(); d.dismiss(); });
+            v.findViewById(R.id.action_copy_link).setOnClickListener(x -> { copyToClipboard(extra); showSnackbar("Link copied"); d.dismiss(); });
             v.findViewById(R.id.action_download_link).setOnClickListener(x -> { if(checkPermission()) downloadFile(extra, "Mozilla/5.0", "link", "*/*"); d.dismiss(); });
         } else {
             return;
@@ -401,9 +548,68 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateIncognitoUI() {
-        int bgColor = isIncognitoMode ? 0xFF343A40 : 0xFFFFFFFF;
-        findViewById(R.id.appBar).setBackgroundColor(bgColor);
-        bottomBar.setBackgroundColor(bgColor);
+        int bgColor = isIncognitoMode ? 0xFF343A40 : 0xFFF1F3F4;
+        floatingUrlCard.setCardBackgroundColor(bgColor);
+    }
+
+    // Tab Persistence
+    private void saveTabs() {
+        try {
+            JSONArray tabsArray = new JSONArray();
+            for (TabInfo tab : tabs) {
+                if (!tab.isIncognito) { // Don't save incognito tabs
+                    JSONObject obj = new JSONObject();
+                    obj.put("id", tab.id);
+                    obj.put("url", tab.url);
+                    obj.put("title", tab.title);
+                    tabsArray.put(obj);
+                }
+            }
+            preferences.edit()
+                .putString(KEY_TABS, tabsArray.toString())
+                .putInt(KEY_CURRENT_TAB, currentTabIndex)
+                .apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private boolean restoreTabs() {
+        try {
+            String tabsJson = preferences.getString(KEY_TABS, "[]");
+            JSONArray tabsArray = new JSONArray(tabsJson);
+            
+            if (tabsArray.length() == 0) return false;
+            
+            for (int i = 0; i < tabsArray.length(); i++) {
+                JSONObject obj = tabsArray.getJSONObject(i);
+                TabInfo tab = new TabInfo(
+                    obj.getString("id"),
+                    obj.getString("url"),
+                    obj.getString("title"),
+                    false
+                );
+                tabs.add(tab);
+            }
+            
+            currentTabIndex = preferences.getInt(KEY_CURRENT_TAB, 0);
+            if (currentTabIndex >= tabs.size()) currentTabIndex = 0;
+            
+            // Restore the current tab with WebView
+            TabInfo currentTab = tabs.get(currentTabIndex);
+            WebView webView = createWebView(false);
+            currentTab.webView = webView;
+            webViewContainer.addView(webView);
+            webView.loadUrl(currentTab.url);
+            
+            updateTabCount();
+            updateIncognitoUI();
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     // Menu
@@ -452,24 +658,40 @@ public class MainActivity extends AppCompatActivity {
         if (pos >= 0 && pos < tabs.size()) {
             currentTabIndex = pos;
             TabInfo t = tabs.get(pos);
-            webViewContainer.removeAllViews();
-            webViewContainer.addView(t.webView);
+            
+            if (t.webView == null) {
+                // Tab was saved but WebView was destroyed, recreate it
+                WebView webView = createWebView(t.isIncognito);
+                t.webView = webView;
+                webViewContainer.removeAllViews();
+                webViewContainer.addView(webView);
+                webView.loadUrl(t.url);
+            } else {
+                webViewContainer.removeAllViews();
+                webViewContainer.addView(t.webView);
+            }
+            
             urlBar.setText(t.url);
             isIncognitoMode = t.isIncognito;
             updateIncognitoUI();
             updateNavigationButtons();
             updateSecurityIcon(t.url);
+            updateHeader(t);
+            saveTabs();
         }
     }
 
     private void closeTab(int pos) {
         if (pos >= 0 && pos < tabs.size()) {
-            tabs.get(pos).webView.destroy();
+            if (tabs.get(pos).webView != null) {
+                tabs.get(pos).webView.destroy();
+            }
             tabs.remove(pos);
             if (tabs.isEmpty()) { finish(); return; }
             if (currentTabIndex >= tabs.size()) currentTabIndex = tabs.size() - 1;
             switchToTab(currentTabIndex);
             updateTabCount();
+            saveTabs();
         }
     }
 
@@ -486,15 +708,40 @@ public class MainActivity extends AppCompatActivity {
         js.setChecked(isJavaScriptEnabled);
         dk.setChecked(isDesktopMode);
 
-        js.setOnCheckedChangeListener((b, c) -> { isJavaScriptEnabled = c; for(TabInfo t: tabs) t.webView.getSettings().setJavaScriptEnabled(c); });
-        dk.setOnCheckedChangeListener((b, c) -> { isDesktopMode = c; applyDesktopMode(); });
+        js.setOnCheckedChangeListener((b, c) -> { 
+            isJavaScriptEnabled = c; 
+            for(TabInfo t: tabs) if (t.webView != null) t.webView.getSettings().setJavaScriptEnabled(c);
+            saveSettings();
+        });
+        dk.setOnCheckedChangeListener((b, c) -> { 
+            isDesktopMode = c; 
+            applyDesktopMode();
+            saveSettings();
+        });
 
-        v.findViewById(R.id.btnClearCache).setOnClickListener(x -> { for(TabInfo t: tabs) t.webView.clearCache(true); Snackbar.make(v, "Cache cleared", Snackbar.LENGTH_SHORT).show(); });
-        v.findViewById(R.id.btnClearHistory).setOnClickListener(x -> { history.clear(); preferences.edit().remove(KEY_HISTORY).apply(); Snackbar.make(v, "History cleared", Snackbar.LENGTH_SHORT).show(); });
-        v.findViewById(R.id.btnClearCookies).setOnClickListener(x -> { CookieManager.getInstance().removeAllCookies(null); Snackbar.make(v, "Cookies cleared", Snackbar.LENGTH_SHORT).show(); });
+        v.findViewById(R.id.btnClearCache).setOnClickListener(x -> { 
+            for(TabInfo t: tabs) if (t.webView != null) t.webView.clearCache(true); 
+            showSnackbar("Cache cleared"); 
+        });
+        v.findViewById(R.id.btnClearHistory).setOnClickListener(x -> { 
+            history.clear(); 
+            preferences.edit().remove(KEY_HISTORY).apply(); 
+            showSnackbar("History cleared"); 
+        });
+        v.findViewById(R.id.btnClearCookies).setOnClickListener(x -> { 
+            CookieManager.getInstance().removeAllCookies(null); 
+            showSnackbar("Cookies cleared"); 
+        });
         v.findViewById(R.id.btnClearAll).setOnClickListener(x -> new MaterialAlertDialogBuilder(this)
             .setTitle("Clear all data?").setMessage("This will clear cache, history, cookies, and bookmarks.")
-            .setPositiveButton("Clear", (dlg, w) -> { for(TabInfo t: tabs) t.webView.clearCache(true); history.clear(); bookmarks.clear(); CookieManager.getInstance().removeAllCookies(null); preferences.edit().clear().apply(); Snackbar.make(v, "All data cleared", Snackbar.LENGTH_SHORT).show(); })
+            .setPositiveButton("Clear", (dlg, w) -> { 
+                for(TabInfo t: tabs) if (t.webView != null) t.webView.clearCache(true); 
+                history.clear(); 
+                bookmarks.clear(); 
+                CookieManager.getInstance().removeAllCookies(null); 
+                preferences.edit().clear().apply(); 
+                showSnackbar("All data cleared"); 
+            })
             .setNegativeButton("Cancel", null).show());
 
         d.show();
@@ -503,14 +750,17 @@ public class MainActivity extends AppCompatActivity {
     private void toggleDesktopMode() {
         isDesktopMode = !isDesktopMode;
         applyDesktopMode();
-        Snackbar.make(bottomBar, isDesktopMode ? "Desktop mode enabled" : "Desktop mode disabled", Snackbar.LENGTH_SHORT).show();
+        saveSettings();
+        showSnackbar(isDesktopMode ? "Desktop mode enabled" : "Desktop mode disabled");
     }
 
     private void applyDesktopMode() {
         for (TabInfo t : tabs) {
-            WebSettings s = t.webView.getSettings();
-            s.setUserAgentString(isDesktopMode ? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" : WebSettings.getDefaultUserAgent(this));
-            t.webView.reload();
+            if (t.webView != null) {
+                WebSettings s = t.webView.getSettings();
+                s.setUserAgentString(isDesktopMode ? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" : WebSettings.getDefaultUserAgent(this));
+                t.webView.reload();
+            }
         }
     }
 
@@ -537,7 +787,7 @@ public class MainActivity extends AppCompatActivity {
         if (t != null) {
             bookmarks.add(0, new Bookmark(t.title, t.url, System.currentTimeMillis()));
             saveBookmarks();
-            Snackbar.make(bottomBar, "Bookmark added", Snackbar.LENGTH_SHORT).show();
+            showSnackbar("Bookmark added");
         }
     }
 
@@ -606,7 +856,7 @@ public class MainActivity extends AppCompatActivity {
         exts.add(new Extension("Dark Reader", "Force dark mode", false, R.drawable.ic_dark_mode));
         exts.add(new Extension("Video Downloader", "Download videos", false, R.drawable.ic_video));
         ExtensionsAdapter a = new ExtensionsAdapter(exts, new ExtensionsAdapter.ExtensionListener() {
-            @Override public void onExtensionToggle(Extension e, boolean en) { Snackbar.make(bottomBar, e.name + (en ? " enabled" : " disabled"), Snackbar.LENGTH_SHORT).show(); }
+            @Override public void onExtensionToggle(Extension e, boolean en) { showSnackbar(e.name + (en ? " enabled" : " disabled")); }
             @Override public void onExtensionSettings(Extension e) {}
         });
         rv.setAdapter(a);
@@ -631,9 +881,9 @@ public class MainActivity extends AppCompatActivity {
             r.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fn);
             DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             dm.enqueue(r);
-            Snackbar.make(bottomBar, "Download started: " + fn, Snackbar.LENGTH_LONG).show();
+            showSnackbar("Download started: " + fn);
         } catch (Exception e) {
-            Snackbar.make(bottomBar, "Download failed", Snackbar.LENGTH_SHORT).show();
+            showSnackbar("Download failed");
         }
     }
 
@@ -670,9 +920,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         TabInfo t = getCurrentTab();
-        if (t != null && t.webView != null && t.webView.canGoBack()) t.webView.goBack();
-        else if (tabs.size() > 1) closeTab(currentTabIndex);
-        else new MaterialAlertDialogBuilder(this).setTitle("Exit?").setPositiveButton("Exit", (d, w) -> super.onBackPressed()).setNegativeButton("Cancel", null).show();
+        if (t != null && t.webView != null && t.webView.canGoBack()) {
+            t.webView.goBack();
+        } else if (tabs.size() > 1) {
+            closeTab(currentTabIndex);
+        } else {
+            new MaterialAlertDialogBuilder(this)
+                .setTitle("Exit?")
+                .setPositiveButton("Exit", (d, w) -> super.onBackPressed())
+                .setNegativeButton("Cancel", null)
+                .show();
+        }
     }
 
     @Override
@@ -687,6 +945,14 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         TabInfo t = getCurrentTab();
         if (t != null && t.webView != null) t.webView.onPause();
+        saveTabs();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        saveTabs();
+        saveSettings();
     }
 
     @Override
