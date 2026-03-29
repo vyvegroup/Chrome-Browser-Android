@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private static final int FILE_PICK_REQUEST = 1002;
+    private static final int REQUEST_SCREEN_CAPTURE = 1003;
     private static final String PREFS_NAME = "ChromeBrowserPrefs";
     private static final String KEY_BOOKMARKS = "bookmarks";
     private static final String KEY_HISTORY = "history";
@@ -127,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
     
     // DevTools
     private DevToolsServer devToolsServer;
+    
+    // Browser API
+    private BrowserAPI browserAPI;
 
     public static class TabInfo {
         String id;
@@ -567,6 +571,12 @@ public class MainActivity extends AppCompatActivity {
             handleLongPress(r);
             return true;
         });
+        
+        // Add Browser API JavaScript Interface
+        if (browserAPI == null) {
+            browserAPI = new BrowserAPI(this, webView);
+        }
+        webView.addJavascriptInterface(browserAPI, "ChromeBrowserAPI");
 
         return webView;
     }
@@ -1016,6 +1026,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == REQUEST_SCREEN_CAPTURE && browserAPI != null) {
+            browserAPI.handleScreenCaptureResult(resultCode, data);
+            return;
+        }
+        
         if (requestCode == FILE_PICK_REQUEST && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
             if (uri != null) {

@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Main Theme -->
+    <!-- Main Theme - Material Design 3 -->
     <style name="Theme.ChromeBrowser" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary colors -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorPrimaryDark">@color/md_theme_primary</item>
-        <item name="colorPrimaryVariant">@color/md_theme_primaryContainer</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
         
         <!-- Secondary colors -->
         <item name="colorSecondary">@color/md_theme_secondary</item>
-        <item name="colorSecondaryVariant">@color/md_theme_secondaryContainer</item>
+        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
         <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+        
+        <!-- Tertiary colors -->
+        <item name="colorTertiary">@color/md_theme_tertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
+        <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
+        
+        <!-- Error colors -->
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="colorErrorContainer">@color/md_theme_errorContainer</item>
+        <item name="colorOnError">@color/md_theme_onError</item>
+        <item name="colorOnErrorContainer">@color/md_theme_onErrorContainer</item>
         
         <!-- Background colors -->
         <item name="android:colorBackground">@color/md_theme_background</item>
@@ -20,27 +34,28 @@
         <!-- Surface colors -->
         <item name="colorSurface">@color/md_theme_surface</item>
         <item name="colorOnSurface">@color/md_theme_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
         
-        <!-- Error colors -->
-        <item name="colorError">@color/md_theme_error</item>
-        <item name="colorOnError">@color/md_theme_onError</item>
+        <!-- Outline -->
+        <item name="colorOutline">@color/md_theme_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_outlineVariant</item>
         
-        <!-- Status bar -->
+        <!-- System bars -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
-        
-        <!-- Navigation bar -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">true</item>
-        
-        <!-- Window -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         
         <!-- Ripple -->
-        <item name="colorControlHighlight">#1F4285F4</item>
+        <item name="colorControlHighlight">@color/ripple</item>
         
         <!-- Animation -->
         <item name="android:windowAnimationStyle">@style/WindowAnimation</item>
+        
+        <!-- Bottom Sheet -->
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.ChromeBrowser.BottomSheetDialog</item>
     </style>
 
     <!-- Window Animation -->
@@ -50,19 +65,20 @@
         <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
         <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
     </style>
-
-    <!-- Tab Text -->
-    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="textAllCaps">false</item>
-        <item name="android:textSize">12sp</item>
+    
+    <!-- Bottom Sheet Dialog Theme Overlay -->
+    <style name="ThemeOverlay.ChromeBrowser.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.ChromeBrowser.BottomSheet</item>
     </style>
     
-    <!-- Bottom Sheet Styles -->
-    <style name="BottomSheetStyle" parent="Widget.Material3.BottomSheet">
-        <item name="shapeAppearance">@style/ShapeAppearance.BottomSheet</item>
+    <!-- Bottom Sheet Style -->
+    <style name="Widget.ChromeBrowser.BottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="shapeAppearance">@style/ShapeAppearance.ChromeBrowser.BottomSheet</item>
+        <item name="backgroundTint">@color/md_theme_surface</item>
+        <item name="elevation">16dp</item>
     </style>
     
-    <style name="ShapeAppearance.BottomSheet" parent="ShapeAppearance.Material3.LargeComponent">
+    <style name="ShapeAppearance.ChromeBrowser.BottomSheet" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">28dp</item>
         <item name="cornerSizeTopRight">28dp</item>
@@ -70,46 +86,120 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
     
-    <!-- Card Style -->
-    <style name="CardStyle" parent="Widget.Material3.CardView.Elevated">
+    <!-- Card Styles -->
+    <style name="Widget.ChromeBrowser.Card.Elevated" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">24dp</item>
-        <item name="cardElevation">2dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardBackgroundColor">@color/md_theme_surface</item>
     </style>
     
-    <!-- Chip Style -->
-    <style name="TabChipStyle" parent="Widget.Material3.Chip.Input">
-        <item name="chipBackgroundColor">#D3E3FD</item>
-        <item name="chipCornerRadius">14dp</item>
-        <item name="android:textColor">#FFFFFF</item>
-        <item name="chipMinHeight">32dp</item>
+    <style name="Widget.ChromeBrowser.Card.Filled" parent="Widget.Material3.CardView.Filled">
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardBackgroundColor">@color/md_theme_surfaceContainer</item>
     </style>
     
     <!-- Button Styles -->
-    <style name="PrimaryButton" parent="Widget.Material3.Button">
+    <style name="Widget.ChromeBrowser.Button.Primary" parent="Widget.Material3.Button">
         <item name="backgroundTint">@color/md_theme_primary</item>
         <item name="android:textColor">@color/md_theme_onPrimary</item>
-        <item name="cornerRadius">20dp</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="iconSize">20dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">8dp</item>
     </style>
     
-    <style name="SecondaryButton" parent="Widget.Material3.Button.TonalButton">
-        <item name="backgroundTint">@color/md_theme_primaryContainer</item>
+    <style name="Widget.ChromeBrowser.Button.Secondary" parent="Widget.Material3.Button.TonalButton">
+        <item name="backgroundTint">@color/md_theme_secondaryContainer</item>
+        <item name="android:textColor">@color/md_theme_onSecondaryContainer</item>
+        <item name="cornerRadius">24dp</item>
+    </style>
+    
+    <style name="Widget.ChromeBrowser.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">24dp</item>
+        <item name="strokeColor">@color/md_theme_outlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+    
+    <!-- Chip Style -->
+    <style name="Widget.ChromeBrowser.Chip" parent="Widget.Material3.Chip.Input">
+        <item name="chipBackgroundColor">@color/md_theme_primaryContainer</item>
+        <item name="chipCornerRadius">16dp</item>
         <item name="android:textColor">@color/md_theme_onPrimaryContainer</item>
-        <item name="cornerRadius">20dp</item>
+        <item name="chipMinHeight">36dp</item>
     </style>
     
     <!-- Switch Style -->
-    <style name="SwitchStyle" parent="Widget.Material3.CompoundButton.Switch">
+    <style name="Widget.ChromeBrowser.Switch" parent="Widget.Material3.CompoundButton.Switch">
         <item name="trackTint">@color/md_theme_primaryContainer</item>
         <item name="thumbTint">@color/md_theme_primary</item>
+    </style>
+    
+    <!-- Text Styles -->
+    <style name="TextAppearance.ChromeBrowser.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextAppearance.ChromeBrowser.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextAppearance.ChromeBrowser.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextAppearance.ChromeBrowser.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextAppearance.ChromeBrowser.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextAppearance.ChromeBrowser.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+    
+    <style name="TextAppearance.ChromeBrowser.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">@color/md_theme_primary</item>
+    </style>
+    
+    <style name="TextAppearance.ChromeBrowser.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+    
+    <!-- Menu Item Style -->
+    <style name="Widget.ChromeBrowser.MenuItem" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/ripple_item_background</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+    
+    <!-- Section Header Style -->
+    <style name="Widget.ChromeBrowser.SectionHeader" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">@color/md_theme_primary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.08</item>
     </style>
     
     <!-- Dark Theme for DevTools -->
     <style name="Theme.ChromeBrowser.Dark" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Primary colors -->
-        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorPrimary">@color/md_theme_inversePrimary</item>
         <item name="colorPrimaryDark">#1E1E1E</item>
-        <item name="colorPrimaryVariant">#252526</item>
-        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorPrimaryContainer">#252526</item>
+        <item name="colorOnPrimary">@color/md_theme_inverseSurface</item>
         
         <!-- Background colors -->
         <item name="android:colorBackground">#1E1E1E</item>
@@ -119,15 +209,11 @@
         <item name="colorSurface">#252526</item>
         <item name="colorOnSurface">#CCCCCC</item>
         
-        <!-- Status bar -->
+        <!-- System bars -->
         <item name="android:statusBarColor">#1E1E1E</item>
         <item name="android:windowLightStatusBar">false</item>
-        
-        <!-- Navigation bar -->
         <item name="android:navigationBarColor">#1E1E1E</item>
         <item name="android:windowLightNavigationBar">false</item>
-        
-        <!-- Window -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 </resources>

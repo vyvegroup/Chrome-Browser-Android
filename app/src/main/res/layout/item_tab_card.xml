@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tabCard"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
-    android:layout_margin="4dp"
-    app:cardCornerRadius="12dp"
+    android:layout_height="170dp"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:strokeWidth="0dp">
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/md_theme_surface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,40 +20,50 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="#F1F3F4">
+            android:background="@color/md_theme_surfaceContainer">
 
             <ImageView
                 android:id="@+id/incognitoIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_incognito"
                 android:visibility="gone"
-                android:tint="#5F6368" />
+                app:tint="@color/text_secondary" />
 
         </FrameLayout>
 
         <!-- Tab Info -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="52dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingStart="8dp"
-            android:paddingEnd="4dp"
-            android:background="#FFFFFF">
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp"
+            android:background="@color/md_theme_surface">
 
-            <ImageView
-                android:id="@+id/tabFavicon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_launcher" />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/md_theme_surfaceContainerHigh">
+
+                <ImageView
+                    android:id="@+id/tabFavicon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_launcher" />
+
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="10dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -60,8 +71,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tab Title"
-                    android:textColor="#202124"
-                    android:textSize="12sp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="@color/text_primary"
                     android:maxLines="1"
                     android:ellipsize="end" />
 
@@ -70,8 +81,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="example.com"
-                    android:textColor="#5F6368"
-                    android:textSize="10sp"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                    android:textColor="@color/text_secondary"
                     android:maxLines="1"
                     android:ellipsize="end" />
 
@@ -79,11 +90,11 @@
 
             <ImageButton
                 android:id="@+id/tabClose"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/ripple_oval"
                 android:src="@drawable/ic_close"
-                android:tint="#5F6368" />
+                app:tint="@color/text_secondary" />
 
         </LinearLayout>
 
