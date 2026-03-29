@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Chrome Colors -->
+    <color name="chrome_blue">#4285F4</color>
+    <color name="chrome_red">#EA4335</color>
+    <color name="chrome_yellow">#FBBC05</color>
+    <color name="chrome_green">#34A853</color>
+    
+    <!-- UI Colors -->
+    <color name="chrome_surface">#FFFFFF</color>
+    <color name="chrome_surface_dark">#202124</color>
+    <color name="chrome_on_surface">#202124</color>
+    <color name="chrome_on_surface_dark">#E8EAED</color>
+    <color name="chrome_secondary">#5F6368</color>
+    <color name="chrome_secondary_dark">#9AA0A6</color>
+    <color name="chrome_background">#F1F3F4</color>
+    <color name="chrome_background_dark">#303134</color>
+    
+    <!-- Material Theme Colors -->
+    <color name="md_theme_primary">#4285F4</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#D3E3FD</color>
+    <color name="md_theme_onPrimaryContainer">#041E49</color>
+    <color name="md_theme_secondary">#5F6368</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#E8EAED</color>
+    <color name="md_theme_onSecondaryContainer">#1F1F1F</color>
+    <color name="md_theme_background">#FFFFFF</color>
+    <color name="md_theme_onBackground">#1F1F1F</color>
+    <color name="md_theme_surface">#FFFFFF</color>
+    <color name="md_theme_onSurface">#1F1F1F</color>
+    <color name="md_theme_error">#B3261E</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+</resources>

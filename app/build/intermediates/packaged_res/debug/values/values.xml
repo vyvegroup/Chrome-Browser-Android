@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="chrome_background">#F1F3F4</color>
+    <color name="chrome_background_dark">#303134</color>
+    <color name="chrome_blue">#4285F4</color>
+    <color name="chrome_green">#34A853</color>
+    <color name="chrome_on_surface">#202124</color>
+    <color name="chrome_on_surface_dark">#E8EAED</color>
+    <color name="chrome_red">#EA4335</color>
+    <color name="chrome_secondary">#5F6368</color>
+    <color name="chrome_secondary_dark">#9AA0A6</color>
+    <color name="chrome_surface">#FFFFFF</color>
+    <color name="chrome_surface_dark">#202124</color>
+    <color name="chrome_yellow">#FBBC05</color>
+    <color name="md_theme_background">#FFFFFF</color>
+    <color name="md_theme_error">#B3261E</color>
+    <color name="md_theme_onBackground">#1F1F1F</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_onPrimaryContainer">#041E49</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_onSecondaryContainer">#1F1F1F</color>
+    <color name="md_theme_onSurface">#1F1F1F</color>
+    <color name="md_theme_primary">#4285F4</color>
+    <color name="md_theme_primaryContainer">#D3E3FD</color>
+    <color name="md_theme_secondary">#5F6368</color>
+    <color name="md_theme_secondaryContainer">#E8EAED</color>
+    <color name="md_theme_surface">#FFFFFF</color>
+    <string name="app_name">Chrome Browser</string>
+    <string name="block_popups">Block pop-ups</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="cache_cleared">Cache cleared</string>
+    <string name="clear_cache">Clear cache</string>
+    <string name="clear_history">Clear history</string>
+    <string name="desktop_mode_disabled">Desktop mode disabled</string>
+    <string name="desktop_mode_enabled">Desktop mode enabled</string>
+    <string name="desktop_site">Desktop site</string>
+    <string name="download_started">Download started</string>
+    <string name="downloads">Downloads</string>
+    <string name="enable_javascript">Enable JavaScript</string>
+    <string name="history">History</string>
+    <string name="history_cleared">History cleared</string>
+    <string name="new_incognito_tab">New Incognito tab</string>
+    <string name="new_tab">New tab</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="search_hint">Search or type URL</string>
+    <string name="settings">Settings</string>
+    <string name="share">Share…</string>
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="Theme.ChromeBrowser" parent="Theme.Material3.Light.NoActionBar">
+        
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorPrimaryDark">@color/md_theme_primary</item>
+        <item name="colorPrimaryVariant">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        
+        
+        <item name="colorSecondary">@color/md_theme_secondary</item>
+        <item name="colorSecondaryVariant">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
+        
+        
+        <item name="android:colorBackground">@color/md_theme_background</item>
+        <item name="colorOnBackground">@color/md_theme_onBackground</item>
+        
+        
+        <item name="colorSurface">@color/md_theme_surface</item>
+        <item name="colorOnSurface">@color/md_theme_onSurface</item>
+        
+        
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="colorOnError">@color/md_theme_onError</item>
+        
+        
+        <item name="android:statusBarColor">@color/chrome_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        
+        
+        <item name="android:navigationBarColor">@color/chrome_surface</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        
+        
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+</resources>
