@@ -131,6 +131,32 @@
         
         <item name="android:windowAnimationStyle">@style/WindowAnimation</item>
     </style>
+    <style name="Theme.ChromeBrowser.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorPrimaryDark">#1E1E1E</item>
+        <item name="colorPrimaryVariant">#252526</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        
+        
+        <item name="android:colorBackground">#1E1E1E</item>
+        <item name="colorOnBackground">#D4D4D4</item>
+        
+        
+        <item name="colorSurface">#252526</item>
+        <item name="colorOnSurface">#CCCCCC</item>
+        
+        
+        <item name="android:statusBarColor">#1E1E1E</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        
+        <item name="android:navigationBarColor">#1E1E1E</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        
+        
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
     <style name="WindowAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
         <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>

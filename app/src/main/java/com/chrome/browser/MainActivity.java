@@ -844,26 +844,23 @@ public class MainActivity extends AppCompatActivity {
             .setNegativeButton("Cancel", null).show());
         
         v.findViewById(R.id.itemDevTools).setOnClickListener(x -> {
-            showDevToolsInfo();
+            d.dismiss();
+            openDevTools();
         });
+        
+        v.findViewById(R.id.btnCloseSettings).setOnClickListener(x -> d.dismiss());
 
         d.show();
     }
     
-    private void showDevToolsInfo() {
-        String info = "Chrome DevTools is enabled!\n\n" +
-            "To debug from PC:\n" +
-            "1. Connect device via USB\n" +
-            "2. Enable USB debugging\n" +
-            "3. Open chrome://inspect on PC Chrome\n" +
-            "4. Find your device and click inspect\n\n" +
-            "DevTools is running on port 9222";
-            
-        new MaterialAlertDialogBuilder(this)
-            .setTitle("Chrome DevTools")
-            .setMessage(info)
-            .setPositiveButton("OK", null)
-            .show();
+    private void openDevTools() {
+        TabInfo currentTab = getCurrentTab();
+        String url = currentTab != null ? currentTab.url : "about:blank";
+        
+        Intent intent = new Intent(this, DevToolsActivity.class);
+        intent.putExtra("url", url);
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     private void toggleDesktopMode() {
