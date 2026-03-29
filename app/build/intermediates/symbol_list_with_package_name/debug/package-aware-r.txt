@@ -1106,6 +1106,7 @@ attr suffixText
 attr suffixTextAppearance
 attr suffixTextColor
 attr suggestionRowLayout
+attr swipeRefreshLayoutProgressSpinnerBackgroundColor
 attr switchMinWidth
 attr switchPadding
 attr switchStyle
@@ -1363,6 +1364,8 @@ color bright_foreground_material_dark
 color bright_foreground_material_light
 color button_material_dark
 color button_material_light
+color call_notification_answer_color
+color call_notification_decline_color
 color cardview_dark_background
 color cardview_light_background
 color cardview_shadow_end_color
@@ -3016,6 +3019,12 @@ drawable ic_arrow_back_black_24
 drawable ic_back
 drawable ic_bookmark
 drawable ic_bookmark_add
+drawable ic_call_answer
+drawable ic_call_answer_low
+drawable ic_call_answer_video
+drawable ic_call_answer_video_low
+drawable ic_call_decline
+drawable ic_call_decline_low
 drawable ic_clear_black_24
 drawable ic_clock_black_24dp
 drawable ic_close
@@ -3121,10 +3130,14 @@ drawable notification_bg_low_pressed
 drawable notification_bg_normal
 drawable notification_bg_normal_pressed
 drawable notification_icon_background
+drawable notification_oversize_large_icon_bg
 drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable ripple_oval
+drawable ripple_round
+drawable tab_count_background
 drawable test_level_drawable
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
@@ -3246,16 +3259,21 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id btnAddFromStore
+id btnAddFromZip
+id btnAddUserScript
 id btnBack
 id btnClearAll
 id btnClearCache
 id btnClearCookies
 id btnClearHistory
+id btnClose
 id btnDone
 id btnForward
 id btnHome
 id btnMenu
 id btnRefresh
+id btnSettings
 id btnShowUrl
 id btnTabs
 id buttonPanel
@@ -3332,10 +3350,13 @@ id easeOut
 id east
 id edge
 id edit_query
+id edit_text_id
 id elastic
 id embed
 id emptyBookmarks
+id emptyExtensions
 id emptyHistory
+id emptyState
 id emptyTabs
 id end
 id endToStart
@@ -3344,9 +3365,10 @@ id enterAlwaysCollapsed
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
-id extensionDesc
+id extensionDescription
 id extensionIcon
 id extensionName
+id extensionSource
 id extensionSwitch
 id extensionsRecyclerView
 id fabNewTabGrid
@@ -3381,6 +3403,7 @@ id groups
 id headerSecurityIcon
 id headerTitle
 id header_title
+id hide_ime_id
 id hideable
 id historyDate
 id historyDelete
@@ -3392,6 +3415,7 @@ id homeAsUp
 id honorRequest
 id horizontal_only
 id icon
+id iconContainer
 id icon_group
 id ifRoom
 id ignore
@@ -3408,6 +3432,7 @@ id italic
 id itemAddBookmark
 id itemBookmarks
 id itemDesktop
+id itemDevTools
 id itemDownloads
 id itemExtensions
 id itemHistory
@@ -3622,13 +3647,15 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
+id swipeRefresh
 id switchAdBlock
 id switchDarkMode
 id switchDesktop
 id switchJavaScript
 id tabCard
 id tabClose
-id tabCountChip
+id tabCountContainer
+id tabCountText
 id tabFavicon
 id tabMode
 id tabTitle
@@ -3686,6 +3713,7 @@ id unlabeled
 id up
 id urlBar
 id urlBarLayout
+id urlRow
 id useLogo
 id vertical_only
 id view_offset_helper
@@ -3844,6 +3872,8 @@ layout design_text_input_start_icon
 layout dialog_edit_bookmark
 layout extensions_bottom_sheet
 layout history_bottom_sheet
+layout ime_base_split_test_activity
+layout ime_secondary_split_test_activity
 layout item_bookmark
 layout item_extension
 layout item_history
@@ -3955,6 +3985,13 @@ string bottomsheet_action_expand_halfway
 string bottomsheet_drag_handle_clicked
 string bottomsheet_drag_handle_content_description
 string cache_cleared
+string call_notification_answer_action
+string call_notification_answer_video_action
+string call_notification_decline_action
+string call_notification_hang_up_action
+string call_notification_incoming_text
+string call_notification_ongoing_text
+string call_notification_screening_text
 string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
@@ -5354,6 +5391,7 @@ styleable State android_id constraints
 styleable StateListDrawable android_dither android_visible android_variablePadding android_constantSize android_enterFadeDuration android_exitFadeDuration
 styleable StateListDrawableItem android_drawable
 styleable StateSet defaultState
+styleable SwipeRefreshLayout swipeRefreshLayoutProgressSpinnerBackgroundColor
 styleable SwitchCompat android_textOn android_textOff android_thumb showText splitTrack switchMinWidth switchPadding switchTextAppearance thumbTextPadding thumbTint thumbTintMode track trackTint trackTintMode
 styleable SwitchMaterial useMaterialThemeColors
 styleable TabItem android_icon android_layout android_text

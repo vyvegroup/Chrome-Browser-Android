@@ -3,12 +3,15 @@ package com.chrome.browser;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.List;
 
@@ -44,13 +47,33 @@ public class ExtensionsAdapter extends RecyclerView.Adapter<ExtensionsAdapter.Ex
         holder.iconImage.setImageResource(extension.iconRes);
         holder.enableSwitch.setChecked(extension.enabled);
         
+        // Set source badge
+        String sourceText = extension.source;
+        if ("store".equals(extension.source)) {
+            sourceText = "Chrome Store";
+        } else if ("zip".equals(extension.source)) {
+            sourceText = "ZIP";
+        } else if ("userscript".equals(extension.source)) {
+            sourceText = "UserScript";
+        }
+        holder.sourceText.setText(sourceText);
+        
+        // Set icon background color based on source
+        int bgColor = 0xFFE8F0FE;
+        if ("userscript".equals(extension.source)) {
+            bgColor = 0xFFFFF3E0;
+        } else if ("zip".equals(extension.source)) {
+            bgColor = 0xFFE6F4EA;
+        }
+        holder.iconContainer.setCardBackgroundColor(bgColor);
+        
         holder.enableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (listener != null) {
                 listener.onExtensionToggle(extension, isChecked);
             }
         });
         
-        holder.itemView.setOnClickListener(v -> {
+        holder.settingsBtn.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onExtensionSettings(extension);
             }
@@ -63,17 +86,23 @@ public class ExtensionsAdapter extends RecyclerView.Adapter<ExtensionsAdapter.Ex
     }
     
     static class ExtensionViewHolder extends RecyclerView.ViewHolder {
+        MaterialCardView iconContainer;
         ImageView iconImage;
         TextView nameText;
         TextView descText;
-        Switch enableSwitch;
+        TextView sourceText;
+        MaterialSwitch enableSwitch;
+        ImageButton settingsBtn;
         
         public ExtensionViewHolder(@NonNull View itemView) {
             super(itemView);
+            iconContainer = itemView.findViewById(R.id.iconContainer);
             iconImage = itemView.findViewById(R.id.extensionIcon);
             nameText = itemView.findViewById(R.id.extensionName);
-            descText = itemView.findViewById(R.id.extensionDesc);
+            descText = itemView.findViewById(R.id.extensionDescription);
+            sourceText = itemView.findViewById(R.id.extensionSource);
             enableSwitch = itemView.findViewById(R.id.extensionSwitch);
+            settingsBtn = itemView.findViewById(R.id.btnSettings);
         }
     }
 }

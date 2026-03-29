@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#FFFFFF">
 
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_horizontal"
+        android:background="#DADCE0" />
+
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -13,20 +24,162 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
 
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#E8F0FE">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_extensions"
+                app:tint="#4285F4" />
+
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
             android:text="Extensions"
             android:textColor="#202124"
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/ripple_oval"
+            android:src="@drawable/ic_close"
+            app:tint="#5F6368" />
+
     </LinearLayout>
+
+    <!-- Add Extension Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddFromStore"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Chrome Store"
+            android:textSize="13sp"
+            app:icon="@drawable/ic_grid"
+            app:iconSize="18dp"
+            app:cornerRadius="22dp"
+            app:backgroundTint="#E8F0FE"
+            android:textColor="#4285F4" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddFromZip"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="ZIP File"
+            android:textSize="13sp"
+            app:icon="@drawable/ic_download"
+            app:iconSize="18dp"
+            app:cornerRadius="22dp"
+            app:backgroundTint="#E6F4EA"
+            android:textColor="#34A853" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddUserScript"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="User JS"
+            android:textSize="13sp"
+            app:icon="@drawable/ic_extensions"
+            app:iconSize="18dp"
+            app:cornerRadius="22dp"
+            app:backgroundTint="#FFF3E0"
+            android:textColor="#FB8C00" />
+
+    </LinearLayout>
+
+    <!-- Installed Extensions Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Installed Extensions"
+        android:textColor="#5F6368"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:letterSpacing="0.1" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/extensionsRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none"
+        android:paddingBottom="24dp" />
+
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/emptyExtensions"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F1F3F4">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_extensions"
+                app:tint="#9AA0A6" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="No extensions installed"
+            android:textColor="#5F6368"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Add extensions from Chrome Store,\nZIP file, or UserScript"
+            android:textColor="#9AA0A6"
+            android:textSize="13sp"
+            android:gravity="center" />
+
+    </LinearLayout>
 
 </LinearLayout>

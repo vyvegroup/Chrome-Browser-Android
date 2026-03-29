@@ -4,134 +4,176 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="16dp">
+    android:background="#FFFFFF">
 
     <!-- Drag Handle -->
     <View
         android:layout_width="32dp"
         android:layout_height="4dp"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="8dp"
         android:layout_gravity="center_horizontal"
         android:background="#DADCE0" />
 
-    <!-- New Tab Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/itemNewTab"
+    <!-- New Tab Buttons -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:text="New tab"
-        android:textSize="15sp"
-        app:icon="@drawable/ic_add"
-        app:iconPadding="16dp"
-        app:iconTint="#5F6368"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        app:strokeColor="#DADCE0"
-        android:textColor="#202124" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp">
 
-    <!-- New Incognito Tab Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/itemNewIncognito"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="8dp"
-        android:text="New Incognito tab"
-        android:textSize="15sp"
-        app:icon="@drawable/ic_incognito"
-        app:iconPadding="16dp"
-        app:iconTint="#5F6368"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        app:strokeColor="#DADCE0"
-        android:textColor="#202124" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/itemNewTab"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="New Tab"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_add"
+            app:iconSize="20dp"
+            app:iconGravity="textStart"
+            style="@style/Widget.Material3.Button"
+            app:backgroundTint="#4285F4"
+            app:cornerRadius="24dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/itemNewIncognito"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Incognito"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_incognito"
+            app:iconSize="20dp"
+            app:iconGravity="textStart"
+            style="@style/Widget.Material3.Button.TonalButton"
+            app:backgroundTint="#343A40"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="24dp" />
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="#E0E0E0" />
+        android:layout_marginBottom="8dp"
+        android:background="#E8EAED" />
 
-    <!-- History -->
+    <!-- Menu Items -->
     <LinearLayout
         android:id="@+id/itemHistory"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_history"
-            android:tint="#5F6368" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F1F3F4">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_history"
+                app:tint="#5F6368" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="20dp"
             android:text="History"
             android:textColor="#202124"
             android:textSize="16sp" />
 
     </LinearLayout>
 
-    <!-- Downloads -->
     <LinearLayout
         android:id="@+id/itemDownloads"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_download"
-            android:tint="#5F6368" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F1F3F4">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_download"
+                app:tint="#5F6368" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="20dp"
             android:text="Downloads"
             android:textColor="#202124"
             android:textSize="16sp" />
 
     </LinearLayout>
 
-    <!-- Bookmarks -->
     <LinearLayout
         android:id="@+id/itemBookmarks"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_bookmark"
-            android:tint="#5F6368" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F1F3F4">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_bookmark"
+                app:tint="#5F6368" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="20dp"
             android:text="Bookmarks"
             android:textColor="#202124"
             android:textSize="16sp" />
@@ -141,114 +183,158 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="#E0E0E0" />
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="#E8EAED" />
 
-    <!-- Add Bookmark -->
     <LinearLayout
         android:id="@+id/itemAddBookmark"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_bookmark_add"
-            android:tint="#5F6368" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#E6F4EA">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_bookmark_add"
+                app:tint="#34A853" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:text="Add to bookmarks"
+            android:layout_marginStart="20dp"
+            android:text="Add to Bookmarks"
             android:textColor="#202124"
             android:textSize="16sp" />
 
     </LinearLayout>
 
-    <!-- Desktop Site -->
     <LinearLayout
         android:id="@+id/itemDesktop"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_desktop"
-            android:tint="#5F6368" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F1F3F4">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_desktop"
+                app:tint="#5F6368" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:text="Desktop site"
+            android:layout_marginStart="20dp"
+            android:text="Desktop Site"
             android:textColor="#202124"
             android:textSize="16sp" />
 
     </LinearLayout>
 
-    <!-- Share -->
     <LinearLayout
         android:id="@+id/itemShare"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_share"
-            android:tint="#5F6368" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#E8F0FE">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_share"
+                app:tint="#4285F4" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:text="Share..."
+            android:layout_marginStart="20dp"
+            android:text="Share"
             android:textColor="#202124"
             android:textSize="16sp" />
 
     </LinearLayout>
 
-    <!-- Extensions -->
     <LinearLayout
         android:id="@+id/itemExtensions"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_extensions"
-            android:tint="#5F6368" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#FFF3E0">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_extensions"
+                app:tint="#FB8C00" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="20dp"
             android:text="Extensions"
             android:textColor="#202124"
             android:textSize="16sp" />
@@ -258,37 +344,52 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="#E0E0E0" />
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="#E8EAED" />
 
-    <!-- Settings -->
     <LinearLayout
         android:id="@+id/itemSettings"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_settings"
-            android:tint="#5F6368" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F1F3F4">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_settings"
+                app:tint="#5F6368" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="20dp"
             android:text="Settings"
             android:textColor="#202124"
             android:textSize="16sp" />
 
     </LinearLayout>
+
+    <View
+        android:layout_height="24dp"
+        android:layout_width="match_parent" />
 
 </LinearLayout>

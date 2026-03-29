@@ -5,7 +5,7 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#FAFAFA"
     android:fitsSystemWindows="true">
 
     <!-- Fullscreen Container for Video -->
@@ -16,228 +16,81 @@
         android:visibility="gone"
         android:background="#000000" />
 
-    <LinearLayout
+    <!-- Main Content with SwipeRefresh -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_marginBottom="80dp">
 
-        <!-- WebView Container -->
         <FrameLayout
-            android:id="@+id/webViewContainer"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="match_parent">
 
-    </LinearLayout>
-
-    <!-- Floating Bottom Bar (ChatGPT style) -->
-    <LinearLayout
-        android:id="@+id/floatingBarContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="8dp"
-        android:paddingTop="4dp"
-        android:background="#00000000">
-
-        <!-- Material Progress Indicator -->
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progressIndicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:indicatorColor="#4285F4"
-            app:trackColor="#E8EAED"
-            app:trackCornerRadius="4dp"
-            app:trackThickness="3dp"
-            app:showAnimationBehavior="inward"
-            app:hideAnimationBehavior="outward" />
-
-        <!-- Floating URL Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/floatingUrlCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:cardBackgroundColor="#F1F3F4"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:strokeWidth="0dp">
-
-            <LinearLayout
+            <!-- WebView Container -->
+            <FrameLayout
+                android:id="@+id/webViewContainer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:scrollbars="none" />
 
-                <!-- URL Input Row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp">
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/emptyState"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                    <!-- Security Icon -->
-                    <ImageView
-                        android:id="@+id/securityIcon"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="8dp"
-                        android:src="@drawable/ic_lock"
-                        android:contentDescription="Security" />
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:src="@drawable/ic_home_chrome"
+                    android:alpha="0.3"
+                    app:tint="#4285F4" />
 
-                    <!-- URL Input -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/urlBarLayout"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        app:boxBackgroundMode="none"
-                        app:hintEnabled="false">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/urlBar"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:hint="Search or type URL"
-                            android:imeOptions="actionGo"
-                            android:inputType="textUri"
-                            android:maxLines="1"
-                            android:textColor="#202124"
-                            android:textColorHint="#5F6368"
-                            android:textSize="15sp" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- Tab Count Chip -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/tabCountChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginEnd="4dp"
-                        android:text="1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="12sp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        app:chipBackgroundColor="#D3E3FD"
-                        app:chipCornerRadius="14dp"
-                        app:chipMinHeight="32dp"
-                        app:chipStartPadding="8dp"
-                        app:chipEndPadding="8dp"
-                        style="@style/Widget.Material3.Chip.Input" />
-
-                    <!-- Menu Button -->
-                    <ImageButton
-                        android:id="@+id/btnMenu"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_more"
-                        android:contentDescription="Menu"
-                        android:tint="#5F6368" />
-
-                </LinearLayout>
-
-                <!-- Navigation Row -->
-                <LinearLayout
-                    android:id="@+id/navigationRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:background="#FFFFFF"
-                    android:visibility="gone">
-
-                    <ImageButton
-                        android:id="@+id/btnBack"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_back"
-                        android:contentDescription="Back"
-                        android:tint="#5F6368" />
-
-                    <ImageButton
-                        android:id="@+id/btnForward"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_forward"
-                        android:contentDescription="Forward"
-                        android:tint="#5F6368" />
-
-                    <ImageButton
-                        android:id="@+id/btnRefresh"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_refresh"
-                        android:contentDescription="Refresh"
-                        android:tint="#5F6368" />
-
-                    <ImageButton
-                        android:id="@+id/btnHome"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_home_chrome"
-                        android:contentDescription="Home"
-                        android:tint="#5F6368" />
-
-                    <ImageButton
-                        android:id="@+id/btnTabs"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_grid"
-                        android:contentDescription="Tabs"
-                        android:tint="#5F6368" />
-
-                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Start browsing"
+                    android:textColor="#5F6368"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
-        </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
 
-    </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!-- Page Title Header (shows when scrolling) -->
+    <!-- Page Header (shows when scrolling down) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/pageHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
+        android:layout_margin="12dp"
         android:visibility="gone"
-        android:layout_margin="8dp"
-        app:cardBackgroundColor="#F1F3F4"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="2dp">
+        app:cardBackgroundColor="#F8F9FA"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="44dp"
+            android:layout_height="48dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp">
+            android:paddingEnd="12dp">
 
             <ImageView
                 android:id="@+id/headerSecurityIcon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_lock" />
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_lock"
+                app:tint="#5F6368" />
 
             <TextView
                 android:id="@+id/headerTitle"
@@ -255,12 +108,223 @@
                 android:id="@+id/btnShowUrl"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/ripple_oval"
                 android:src="@drawable/ic_search"
-                android:tint="#5F6368" />
+                app:tint="#5F6368" />
 
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <!-- Floating Bottom Bar (Compact, Modern) -->
+    <LinearLayout
+        android:id="@+id/floatingBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#00000000">
+
+        <!-- Material Progress Indicator -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            app:indicatorColor="#4285F4"
+            app:trackColor="#E8EAED"
+            app:trackCornerRadius="4dp"
+            app:trackThickness="3dp"
+            app:showAnimationBehavior="inward"
+            app:hideAnimationBehavior="outward" />
+
+        <!-- Floating URL Card (Compact) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/floatingUrlCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp"
+            app:rippleColor="#1F4285F4">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- URL Input Row (Compact) -->
+                <LinearLayout
+                    android:id="@+id/urlRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp">
+
+                    <!-- Security Icon (Circular) -->
+                    <FrameLayout
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="4dp">
+
+                        <ImageView
+                            android:id="@+id/securityIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_lock"
+                            app:tint="#34A853" />
+
+                    </FrameLayout>
+
+                    <!-- URL Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/urlBarLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        app:boxBackgroundMode="none"
+                        app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/urlBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="Search or URL"
+                            android:imeOptions="actionGo"
+                            android:inputType="textUri"
+                            android:maxLines="1"
+                            android:textColor="#202124"
+                            android:textColorHint="#9AA0A6"
+                            android:textSize="14sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Tab Count (Rounded Square) -->
+                    <FrameLayout
+                        android:id="@+id/tabCountContainer"
+                        android:layout_width="36dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/tab_count_background"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:id="@+id/tabCountText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="1"
+                            android:textColor="#4285F4"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                    </FrameLayout>
+
+                    <!-- Menu Button (Circular) -->
+                    <FrameLayout
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="4dp">
+
+                        <ImageButton
+                            android:id="@+id/btnMenu"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/ripple_oval"
+                            android:src="@drawable/ic_more"
+                            android:contentDescription="Menu"
+                            app:tint="#5F6368" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!-- Navigation Row (Expandable) -->
+                <LinearLayout
+                    android:id="@+id/navigationRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:background="#FAFAFA"
+                    android:visibility="gone"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp">
+
+                    <!-- Back Button -->
+                    <ImageButton
+                        android:id="@+id/btnBack"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ripple_round"
+                        android:src="@drawable/ic_back"
+                        android:contentDescription="Back"
+                        app:tint="#5F6368" />
+
+                    <!-- Forward Button -->
+                    <ImageButton
+                        android:id="@+id/btnForward"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ripple_round"
+                        android:src="@drawable/ic_forward"
+                        android:contentDescription="Forward"
+                        app:tint="#5F6368" />
+
+                    <!-- Refresh Button -->
+                    <ImageButton
+                        android:id="@+id/btnRefresh"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ripple_round"
+                        android:src="@drawable/ic_refresh"
+                        android:contentDescription="Refresh"
+                        app:tint="#5F6368" />
+
+                    <!-- Home Button -->
+                    <ImageButton
+                        android:id="@+id/btnHome"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ripple_round"
+                        android:src="@drawable/ic_home_chrome"
+                        android:contentDescription="Home"
+                        app:tint="#5F6368" />
+
+                    <!-- Tabs Button -->
+                    <ImageButton
+                        android:id="@+id/btnTabs"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ripple_round"
+                        android:src="@drawable/ic_grid"
+                        android:contentDescription="Tabs"
+                        app:tint="#5F6368" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
